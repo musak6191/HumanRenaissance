@@ -1,4 +1,4 @@
-### Human Renaissance
+# Human Renaissance
 
 Human Renaissance is a marketplace-web-app for freelancers and commissioners. Its aim is to rethink communication between artists and partners and shape it new through new interaction concepts!
 
@@ -7,7 +7,7 @@ Human Renaissance is a marketplace-web-app for freelancers and commissioners. It
 Frontend: Vite for fast builds and React for Frontend
 Backend: Express for future routing 👍
 
-### Documentation
+# Documentation
 
 ## Initial Commit 24_10_2026
 
