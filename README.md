@@ -7,6 +7,14 @@ Human Renaissance is a marketplace-web-app for freelancers and commissioners. It
 Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
 Backend: Express (Port 3000)
 
+Ressources: Artist, Commissioner, Commission, Artgroups, Artboard, Chats, Calls
+Hierarchy: 1 Commission belongs to 1 commissioner
+            n Artists apply to one commission
+            n Artists can be accepted in one commission
+            n Artists can be part of one artgroup
+            1 Artgroup can have 1 Artboard
+            n Artists can have Chats and Calls with 1 Commissioner
+
 # Documentation
 
 ## Initial Commit 24_10_2026
