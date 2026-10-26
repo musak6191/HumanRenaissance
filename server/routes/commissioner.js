@@ -2,9 +2,22 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 
 const router = express.Router();
-let commissioners = [];
+export let commissioners = [
+  {
+    id: "sample-commissioner-1",
+    surname: "Renaissance",
+    name: "Alex",
+    biography: "A sample commissioner for the in-memory API data.",
+    email: "alex.renaissance@example.com",
+    passwordHash: "sample-password-hash",
+    city: "Berlin",
+    zipCode: "10115",
+    country: "Germany",
+  },
+];
 
-const getCommissioner = (id) => commissioners.find((commissioner) => commissioner.id === id);
+export const getCommissioner = (id) =>
+  commissioners.find((commissioner) => commissioner.id === id);
 const normalizeEmail = (email) => email.trim().toLowerCase();
 const hasRequiredCredentials = ({ email, passwordHash }) =>
   typeof email === "string" &&

@@ -43,3 +43,4 @@ Implemented an API-endpoint for commission, I tested it via the Hoppscotch Deskt
 Already implemented API Endpoints are:
     - Commissions
     - Commissioners
+    - Artists
