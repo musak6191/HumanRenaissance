@@ -16,3 +16,7 @@ initially set up the full-stack setup with vite+react and express. A nice workin
 ## Migrated Next.js 24_10_2026
 
 Migrated from Vite+React to Next.js because of SEO and up-to-date Data. Either way I want to strengthen my know-how with that framework since it´s industry standard. 
+
+## Implemented first UI changes 26_10_2026
+
+A fully fletched out UI is about to be implemented, for now the first screen, where you make a comission via prompt, is created.

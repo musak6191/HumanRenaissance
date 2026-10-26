@@ -1,8 +1,8 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Human Renaissance — Art commissions, reimagined",
-  description: "A marketplace for meaningful art commissions.",
+  title: "Create a prompt — Human Renaissance",
+  description: "Create a commission prompt for Human Renaissance.",
 };
 
 export default function RootLayout({ children }) {
