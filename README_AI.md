@@ -20,6 +20,6 @@ Commissioners are stored in memory and have the fields `surname`, `name`, `biogr
 - `PUT /api/commissioner/:id` - completely replace an existing commissioner with `200`; invalid credentials or a duplicate e-mail return `400`
 - `DELETE /api/commissioner/:id` - delete an existing commissioner and return `204`, or return `404` when it does not exist
 
-Each commission contains a `commissionerId` that references an existing commissioner. Creating or replacing a commission with a missing or unknown `commissionerId` returns `400`.
+Each commission contains a `commissionerId`, an `artistIds` array, a `started` boolean, a `fusionCommission` boolean, an `enteredAt` timestamp, and a nullable `startedAt` timestamp. A regular commission must reference exactly one artist; a fusion commission must reference at least two artists. All referenced artists and the commissioner must exist.
 
 Artists have the fields `surname`, `name`, `biography`, `email`, `passwordHash`, `city`, `zipCode`, `country`, and `portfolioPictures`. An artist can have at most four portfolio pictures. Artist creation and replacement return `400` for missing credentials, duplicate e-mail addresses, or more than four portfolio pictures.

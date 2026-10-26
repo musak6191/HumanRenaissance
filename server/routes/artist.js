@@ -2,9 +2,22 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 
 const router = express.Router();
-let artists = [];
+let artists = [
+  {
+    id: "sample-artist-1",
+    surname: "Painter",
+    name: "Alex",
+    biography: "A sample artist for the in-memory API data.",
+    email: "alex.painter@example.com",
+    passwordHash: "sample-password-hash",
+    city: "Berlin",
+    zipCode: "10115",
+    country: "Germany",
+    portfolioPictures: [],
+  },
+];
 
-const getArtist = (id) => artists.find((artist) => artist.id === id);
+export const getArtist = (id) => artists.find((artist) => artist.id === id);
 const normalizeEmail = (email) => email.trim().toLowerCase();
 const hasRequiredCredentials = ({ email, passwordHash }) =>
   typeof email === "string" &&
