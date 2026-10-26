@@ -12,6 +12,7 @@ export default function HomePage() {
   const [form, setForm] = useState(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [screen, setScreen] = useState("prompt");
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -26,43 +27,90 @@ export default function HomePage() {
 
   function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(true);
+    setScreen("commissions");
+    setSubmitted(false);
+  }
+
+  function renderNavigation() {
+    return (
+      <>
+        <button
+          className={`menu-button${menuOpen ? " is-open" : ""}`}
+          type="button"
+          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((current) => !current)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        {menuOpen && (
+          <div className="navigation-layer">
+            <button
+              className="navigation-backdrop"
+              type="button"
+              aria-label="Close navigation menu"
+              onClick={() => setMenuOpen(false)}
+            />
+            <nav className="navigation-menu" aria-label="Main navigation">
+              <div className="navigation-brand">
+                <span>H</span>
+                <strong>Human renaissance</strong>
+              </div>
+              <a className="navigation-link" href="#market" onClick={() => setMenuOpen(false)}>
+                Market
+              </a>
+            </nav>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  if (screen === "commissions") {
+    return (
+      <main className="prompt-page commissions-page">
+        {renderNavigation()}
+        <header className="prompt-header" aria-label="Human Renaissance">
+          H
+        </header>
+        <h1 className="commissions-title">Commissions</h1>
+
+        <section className="commission-panel" aria-labelledby="active-commissions-title">
+          <h2 id="active-commissions-title">
+            <span>Active</span> commissions
+          </h2>
+          <div className="commission-list">
+            <article className="commission-item">
+              <p>{"{Prompt}"}</p>
+            </article>
+          </div>
+        </section>
+
+        <section className="commission-panel" aria-labelledby="displayed-commissions-title">
+          <h2 id="displayed-commissions-title">
+            <span>Displayed</span> commissions
+          </h2>
+          <div className="commission-list">
+            <article className="commission-item">
+              <p>{form.prompt || "{Prompt}"}</p>
+              <span>{form.prompt ? "0 new · 0 total applicants" : "{Amount of applicants}"}</span>
+            </article>
+          </div>
+        </section>
+
+        <button className="new-commission-button" type="button" aria-label="Create a new commission" onClick={() => setScreen("prompt")}>
+          <span aria-hidden="true" />
+        </button>
+      </main>
+    );
   }
 
   return (
     <main className="prompt-page">
-      <button
-        className={`menu-button${menuOpen ? " is-open" : ""}`}
-        type="button"
-        aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
-        aria-expanded={menuOpen}
-        onClick={() => setMenuOpen((current) => !current)}
-      >
-        <span />
-        <span />
-        <span />
-      </button>
-
-      {menuOpen && (
-        <div className="navigation-layer">
-          <button
-            className="navigation-backdrop"
-            type="button"
-            aria-label="Close navigation menu"
-            onClick={() => setMenuOpen(false)}
-          />
-          <nav className="navigation-menu" aria-label="Main navigation">
-            <div className="navigation-brand">
-              <span>H</span>
-              <strong>Human renaissance</strong>
-            </div>
-            <a className="navigation-link" href="#market" onClick={() => setMenuOpen(false)}>
-              Market
-            </a>
-          </nav>
-        </div>
-      )}
-
+      {renderNavigation()}
       <header className="prompt-header" aria-label="Human Renaissance">
         H
       </header>

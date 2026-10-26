@@ -27,6 +27,22 @@ body { margin: 0; }
 .navigation-link::after { position: absolute; z-index: -1; content: ""; left: -3px; right: -4px; bottom: 1px; height: 10px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .4; }
 .prompt-header { padding-top: 17px; color: #ff8800; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 46px; font-style: italic; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-align: center; }
 .prompt-form { width: min(748px, calc(100% - 40px)); margin: 35px auto 0; }
+.commissions-page { padding-bottom: 25px; }
+.commissions-title { margin: 5px 0 17px; color: #4a4a4a; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 46px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-align: center; }
+.commission-panel { width: min(780px, calc(100% - 40px)); height: 262px; margin: 0 auto 13px; overflow: hidden; box-shadow: inset 0 1px 5px rgb(74 74 74 / 28%); }
+.commission-panel h2 { margin: 24px 18px 0; font-family: "Abel", sans-serif; font-size: 16px; font-weight: 400; letter-spacing: var(--sans-letter-spacing); line-height: 1; }
+.commission-panel h2 span { position: relative; z-index: 0; }
+.commission-panel h2 span::after { position: absolute; z-index: -1; content: ""; left: -2px; right: -3px; bottom: 0; height: 7px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .4; }
+.commission-list { height: calc(100% - 46px); margin-top: 24px; overflow-y: auto; }
+.commission-item { min-height: 110px; padding: 2px 0 20px 82px; border-bottom: 1px solid rgb(74 74 74 / 20%); }
+.commission-item p { margin: 0; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); line-height: 1.15; }
+.commission-item span { display: block; margin-top: 10px; font-size: 16px; letter-spacing: var(--sans-letter-spacing); }
+.new-commission-button { display: block; width: 48px; height: 48px; margin: 11px auto 0; border: 0; padding: 0; color: #ff8800; background: transparent; cursor: pointer; }
+.new-commission-button span { position: relative; display: block; width: 42px; height: 42px; margin: auto; color: #ff8800; transition: transform 160ms ease; }
+.new-commission-button span::before, .new-commission-button span::after { position: absolute; top: 19px; left: 3px; width: 36px; height: 4px; border-radius: 3px; background: currentColor; content: ""; }
+.new-commission-button span::after { transform: rotate(90deg); }
+.new-commission-button:hover span, .new-commission-button:focus-visible span { transform: scale(1.08); }
+.new-commission-button:focus-visible { outline: 2px solid #ff8800; outline-offset: 5px; }
 .prompt-introduction h1 { margin: 0; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1.05; }
 .prompt-introduction h1 em, .gage-field > span { isolation: isolate; position: relative; z-index: 0; }
 .prompt-introduction h1 em::after, .gage-field > span::after { position: absolute; z-index: -1; content: ""; left: -3px; right: -4px; bottom: 5px; height: 10px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .40; }

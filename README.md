@@ -20,3 +20,5 @@ Migrated from Vite+React to Next.js because of SEO and up-to-date Data. Either w
 ## Implemented first UI changes 26_10_2026
 
 A fully fletched out UI is about to be implemented, for now the first screen, where you make a comission via prompt, is created.
+
+Second screen, with an overview of the commissions.
