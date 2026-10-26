@@ -2,6 +2,10 @@
 
 Human Renaissance is a marketplace-web-app for freelancers and commissioners. Its aim is to rethink communication between artists and partners and shape it new through new interaction concepts!
 
+## Additional Info
+
+There is another Readme called README_AI.md. It´s for the distinction between my ReadMe entries and the ones of the Agent.
+
 ## Tech Stack
 
 Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
@@ -14,6 +18,7 @@ Hierarchy: 1 Commission belongs to 1 commissioner
             n Artists can be part of one artgroup
             1 Artgroup can have 1 Artboard
             n Artists can have Chats and Calls with 1 Commissioner
+
 
 # Documentation
 
@@ -34,3 +39,7 @@ Second screen, with an overview of the commissions.
 ## Starting REST-API implementation 26_10_2026
 
 Implemented an API-endpoint for commission, I tested it via the Hoppscotch Desktop App
+
+Already implemented API Endpoints are:
+    - Commissions
+    - Commissioners
