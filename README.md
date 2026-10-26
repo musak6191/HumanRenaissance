@@ -4,8 +4,8 @@ Human Renaissance is a marketplace-web-app for freelancers and commissioners. It
 
 ## Tech Stack
 
-Frontend: Vite for fast builds and React for Frontend
-Backend: Express for future routing 👍
+Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
+Backend: Express (Port 3000)
 
 # Documentation
 
