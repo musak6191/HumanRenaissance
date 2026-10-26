@@ -38,40 +38,72 @@ let commissions = [
   },
 ];
 
-app.get("/api/commissions", (_request, response) => {
+const getCommission = (id) => commissions.find((commission) => commission.id === id);
+
+app.get(["/api/commission", "/api/commissions"], (_request, response) => {
   response.json(commissions);
 });
 
-app.post("/api/commissions", (request, response) => {
-  const { title, prompt, budget, timeline } = request.body;
+app.get("/api/commission/:id", (request, response) => {
+  const commission = getCommission(request.params.id);
 
-  if (
-    typeof title !== "string" ||
-    title.trim().length < 3 ||
-    typeof prompt !== "string" ||
-    prompt.trim().length < 20 ||
-    !Number.isFinite(Number(budget)) ||
-    Number(budget) <= 0 ||
-    typeof timeline !== "string" ||
-    !timeline.trim()
-  ) {
-    response.status(400).json({
-      message: "Please provide a title, a prompt of at least 20 characters, a budget, and a timeline.",
-    });
+  if (!commission) {
+    response.status(404).json({ message: "Commission not found." });
+    return;
+  }
+
+  response.json(commission);
+});
+
+app.post(["/api/commission", "/api/commissions"], (request, response) => {
+  const { title } = request.body;
+
+  if (typeof title !== "string" || !title.trim()) {
+    response.status(400).json({ message: "A title is required." });
     return;
   }
 
   const commission = {
     id: randomUUID(),
+    ...request.body,
     title: title.trim(),
-    prompt: prompt.trim(),
-    budget: Number(budget),
-    timeline: timeline.trim(),
     createdAt: new Date().toISOString(),
   };
 
   commissions = [commission, ...commissions];
   response.status(201).json(commission);
+});
+
+app.put("/api/commission/:id", (request, response) => {
+  const commissionIndex = commissions.findIndex(
+    (commission) => commission.id === request.params.id,
+  );
+
+  if (commissionIndex === -1) {
+    response.status(404).json({ message: "Commission not found." });
+    return;
+  }
+
+  const commission = {
+    ...request.body,
+    id: request.params.id,
+  };
+  commissions[commissionIndex] = commission;
+  response.json(commission);
+});
+
+app.delete("/api/commission/:id", (request, response) => {
+  const commissionIndex = commissions.findIndex(
+    (commission) => commission.id === request.params.id,
+  );
+
+  if (commissionIndex === -1) {
+    response.status(404).json({ message: "Commission not found." });
+    return;
+  }
+
+  commissions.splice(commissionIndex, 1);
+  response.status(204).send();
 });
 
 app.listen(port, () => {
