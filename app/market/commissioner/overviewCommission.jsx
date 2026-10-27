@@ -14,7 +14,9 @@ function CommissionList({ commissions, emptyMessage, onSelect }) {
       className="commission-item commission-item-button"
       key={commission.id}
       type="button"
-      onClick={() => onSelect(commission.id)}
+      onClick={() =>
+        onSelect(commission.id, Array.isArray(commission.artistIds) && commission.artistIds.length > 0)
+      }
     >
       <p>{commission.prompt}</p>
       <span>

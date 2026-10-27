@@ -15,7 +15,7 @@ async function fetchJson(path) {
   return result;
 }
 
-export default function ViewCommission({ commissionId, onBack, navigation }) {
+export default function ViewCommission({ commissionId, isActive, onBack, navigation }) {
   const [commission, setCommission] = useState(null);
   const [artists, setArtists] = useState([]);
   const [artGroups, setArtGroups] = useState([]);
@@ -69,16 +69,18 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
       return [];
     }
 
-    const applicantIds = Array.isArray(commission.applicantIds)
+    const applicantIds = isActive
+      ? commission.artistIds
+      : Array.isArray(commission.applicantIds)
       ? commission.applicantIds
       : commission.artistIds;
 
     return applicantIds
       .map((artistId) => artists.find((artist) => artist.id === artistId))
       .filter(Boolean)
-      .filter((artist) => !acceptedArtists.includes(artist.id))
-      .filter((artist) => !commission.declinedApplicantIds?.includes(artist.id));
-  }, [artists, commission, acceptedArtists]);
+      .filter((artist) => isActive || !acceptedArtists.includes(artist.id))
+      .filter((artist) => isActive || !commission.declinedApplicantIds?.includes(artist.id));
+  }, [artists, commission, acceptedArtists, isActive]);
 
   const applicant = applicants[currentApplicant];
   const applicantGroup = applicant
@@ -86,7 +88,7 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
         (group) => Array.isArray(group.artistIds) && group.artistIds.includes(applicant.id),
       )
     : null;
-  const isFusionSecondApplicant = Boolean(
+  const isFusionSecondApplicant = !isActive && Boolean(
     commission?.fusionCommission && acceptedArtists.length === 1,
   );
 
@@ -226,20 +228,46 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
           <h1 className="commission-view-title">Your Commission</h1>
           <p className="commission-view-prompt">{commission.prompt}</p>
           <section className="applicant-panel" aria-labelledby="applicants-title">
-            <h2 id="applicants-title"><span>Applicants</span></h2>
+            <h2 id="applicants-title"><span>{isActive ? "Artists" : "Applicants"}</span></h2>
             {isFusionSecondApplicant && (
               <p className="fusion-applicant-note">
                 Choose the 2. artist for this fusion commission.
               </p>
             )}
-            {applicant && !noMoreApplicants ? (
+            {applicant && (isActive || !noMoreApplicants) ? (
               <>
-                <div className="portfolio-carousel">
+                <div className={`portfolio-carousel${isActive ? " artist-carousel" : ""}`}>
+                  {isActive && applicants.length > 1 && (
+                    <button
+                      className="carousel-arrow carousel-arrow-previous"
+                      type="button"
+                      aria-label="Previous artist"
+                      onClick={() =>
+                        setCurrentApplicant(
+                          (current) => (current - 1 + applicants.length) % applicants.length,
+                        )
+                      }
+                    >
+                      ←
+                    </button>
+                  )}
                   {(applicant.portfolioPictures || []).map((picture) => (
                     <img key={picture} src={picture} alt="" />
                   ))}
                   {(!applicant.portfolioPictures || applicant.portfolioPictures.length === 0) && (
                     <div className="portfolio-placeholder">Portfolio</div>
+                  )}
+                  {isActive && applicants.length > 1 && (
+                    <button
+                      className="carousel-arrow carousel-arrow-next"
+                      type="button"
+                      aria-label="Next artist"
+                      onClick={() =>
+                        setCurrentApplicant((current) => (current + 1) % applicants.length)
+                      }
+                    >
+                      →
+                    </button>
                   )}
                 </div>
                 <h3>{applicant.name} {applicant.surname}</h3>
@@ -250,7 +278,7 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
               <p className="no-more-applicants">No more applicants</p>
             )}
             {error && commission && <p className="prompt-status" role="alert">{error}</p>}
-            {!noMoreApplicants && <div className="applicant-actions">
+            {!isActive && !noMoreApplicants && <div className="applicant-actions">
               <button type="button" className="decline-applicant" aria-label="Decline applicant" onClick={declineApplicant} disabled={!applicant || saving}>×</button>
               <button type="button" className="accept-applicant" aria-label="Accept applicant" onClick={acceptApplicant} disabled={!applicant || saving}>✓</button>
             </div>}

@@ -20,6 +20,7 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [screen, setScreen] = useState("prompt");
   const [selectedCommissionId, setSelectedCommissionId] = useState(null);
+  const [selectedCommissionIsActive, setSelectedCommissionIsActive] = useState(false);
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -88,8 +89,9 @@ export default function HomePage() {
     return (
       <OverviewCommission
         onCreate={() => setScreen("prompt")}
-        onSelectCommission={(commissionId) => {
+        onSelectCommission={(commissionId, isActive) => {
           setSelectedCommissionId(commissionId);
+          setSelectedCommissionIsActive(isActive);
           setScreen("view-commission");
         }}
         navigation={navigation}
@@ -101,6 +103,7 @@ export default function HomePage() {
     return (
       <ViewCommission
         commissionId={selectedCommissionId}
+        isActive={selectedCommissionIsActive}
         onBack={() => setScreen("commissions")}
         navigation={navigation}
       />
