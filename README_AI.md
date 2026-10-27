@@ -25,3 +25,5 @@ Each commission contains a `commissionerId`, an `artistIds` array, a `started` b
 Artists have the fields `surname`, `name`, `biography`, `email`, `passwordHash`, `city`, `zipCode`, `country`, and `portfolioPictures`. An artist can have at most four portfolio pictures. Artist creation and replacement return `400` for missing credentials, duplicate e-mail addresses, or more than four portfolio pictures.
 
 Registrations are stored in memory and own the user's `email` and `password`. Use `GET`, `POST`, `PUT /api/auth/registration/:id`, and `DELETE /api/auth/registration/:id` for registration management. Artist and commissioner profiles no longer contain authentication fields.
+
+Art groups contain one unique `artStyle`, up to three string values in `interests`, an `artistIds` array, and a `visibility` of `public`, `private`, or `invitation`. Artist IDs must reference existing artists.
