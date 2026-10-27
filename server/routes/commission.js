@@ -45,6 +45,20 @@ let commissions = [
     enteredAt: "2026-10-15T09:00:00.000Z",
     startedAt: null,
   },
+  {
+    id: "sample-display-1",
+    commissionerId: "sample-commissioner-1",
+    artistIds: [],
+    applicantIds: ["sample-artist-1"],
+    started: false,
+    fusionCommission: false,
+    prompt:
+      "Design a bold, hopeful poster for a new beginning, combining expressive typography with warm sunrise colours.",
+    budget: 650,
+    timeline: "1–2 months",
+    enteredAt: "2026-10-22T09:00:00.000Z",
+    startedAt: null,
+  },
 ];
 
 const getCommission = (id) => commissions.find((commission) => commission.id === id);

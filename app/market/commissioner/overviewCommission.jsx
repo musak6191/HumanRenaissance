@@ -4,22 +4,27 @@ import { useEffect, useState } from "react";
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-function CommissionList({ commissions, emptyMessage }) {
+function CommissionList({ commissions, emptyMessage, onSelect }) {
   if (commissions.length === 0) {
     return <p className="commission-item">{emptyMessage}</p>;
   }
 
   return commissions.map((commission) => (
-    <article className="commission-item" key={commission.id}>
+    <button
+      className="commission-item commission-item-button"
+      key={commission.id}
+      type="button"
+      onClick={() => onSelect(commission.id)}
+    >
       <p>{commission.prompt}</p>
       <span>
         {Array.isArray(commission.artistIds) ? commission.artistIds.length : 0} assigned artists
       </span>
-    </article>
+    </button>
   ));
 }
 
-export default function OverviewCommission({ onCreate, navigation }) {
+export default function OverviewCommission({ onCreate, onSelectCommission, navigation }) {
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -91,6 +96,7 @@ export default function OverviewCommission({ onCreate, navigation }) {
             <CommissionList
               commissions={activeCommissions}
               emptyMessage="No active commissions."
+              onSelect={onSelectCommission}
             />
           )}
         </div>
@@ -111,6 +117,7 @@ export default function OverviewCommission({ onCreate, navigation }) {
             <CommissionList
               commissions={displayedCommissions}
               emptyMessage="No displayed commissions."
+              onSelect={onSelectCommission}
             />
           )}
         </div>

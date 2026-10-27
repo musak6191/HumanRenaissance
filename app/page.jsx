@@ -3,6 +3,7 @@
 import { useState } from "react";
 import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
+import ViewCommission from "./market/commissioner/viewCommission";
 import CommissionerNavigation from "./market/commissioner/navigation";
 
 const initialForm = {
@@ -18,6 +19,7 @@ export default function HomePage() {
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [screen, setScreen] = useState("prompt");
+  const [selectedCommissionId, setSelectedCommissionId] = useState(null);
 
   function updateField(event) {
     const { name, value } = event.target;
@@ -82,6 +84,20 @@ export default function HomePage() {
     return (
       <OverviewCommission
         onCreate={() => setScreen("prompt")}
+        onSelectCommission={(commissionId) => {
+          setSelectedCommissionId(commissionId);
+          setScreen("view-commission");
+        }}
+        navigation={navigation}
+      />
+    );
+  }
+
+  if (screen === "view-commission") {
+    return (
+      <ViewCommission
+        commissionId={selectedCommissionId}
+        onBack={() => setScreen("commissions")}
         navigation={navigation}
       />
     );
