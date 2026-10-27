@@ -23,3 +23,5 @@ Commissioners are stored in memory and have the fields `surname`, `name`, `biogr
 Each commission contains a `commissionerId`, an `artistIds` array, a `started` boolean, a `fusionCommission` boolean, an `enteredAt` timestamp, and a nullable `startedAt` timestamp. A regular commission must reference exactly one artist; a fusion commission must reference at least two artists. All referenced artists and the commissioner must exist.
 
 Artists have the fields `surname`, `name`, `biography`, `email`, `passwordHash`, `city`, `zipCode`, `country`, and `portfolioPictures`. An artist can have at most four portfolio pictures. Artist creation and replacement return `400` for missing credentials, duplicate e-mail addresses, or more than four portfolio pictures.
+
+Registrations are stored in memory and own the user's `email` and `password`. Use `GET`, `POST`, `PUT /api/auth/registration/:id`, and `DELETE /api/auth/registration/:id` for registration management. Artist and commissioner profiles no longer contain authentication fields.

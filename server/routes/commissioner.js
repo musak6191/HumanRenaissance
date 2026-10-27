@@ -8,8 +8,6 @@ export let commissioners = [
     surname: "Renaissance",
     name: "Alex",
     biography: "A sample commissioner for the in-memory API data.",
-    email: "alex.renaissance@example.com",
-    passwordHash: "sample-password-hash",
     city: "Berlin",
     zipCode: "10115",
     country: "Germany",
@@ -18,17 +16,6 @@ export let commissioners = [
 
 export const getCommissioner = (id) =>
   commissioners.find((commissioner) => commissioner.id === id);
-const normalizeEmail = (email) => email.trim().toLowerCase();
-const hasRequiredCredentials = ({ email, passwordHash }) =>
-  typeof email === "string" &&
-  Boolean(email.trim()) &&
-  typeof passwordHash === "string" &&
-  Boolean(passwordHash.trim());
-const emailBelongsToAnotherCommissioner = (email, id) =>
-  commissioners.some(
-    (commissioner) =>
-      commissioner.id !== id && normalizeEmail(commissioner.email) === normalizeEmail(email),
-  );
 
 router.get("/commissioner", (_request, response) => {
   response.json(commissioners);
@@ -46,23 +33,11 @@ router.get("/commissioner/:id", (request, response) => {
 });
 
 router.post("/commissioner", (request, response) => {
-  const { email, passwordHash } = request.body;
-
-  if (!hasRequiredCredentials({ email, passwordHash })) {
-    response.status(400).json({ message: "An email and passwordHash are required." });
-    return;
-  }
-
-  if (emailBelongsToAnotherCommissioner(email)) {
-    response.status(400).json({ message: "The email is already in use." });
-    return;
-  }
+  const { email: _email, passwordHash: _passwordHash, ...profile } = request.body;
 
   const commissioner = {
     id: randomUUID(),
-    ...request.body,
-    email: normalizeEmail(email),
-    passwordHash: passwordHash.trim(),
+    ...profile,
   };
 
   commissioners = [commissioner, ...commissioners];
@@ -79,20 +54,10 @@ router.put("/commissioner/:id", (request, response) => {
     return;
   }
 
-  const { email, passwordHash } = request.body;
-
-  if (!hasRequiredCredentials({ email, passwordHash })) {
-    response.status(400).json({ message: "An email and passwordHash are required." });
-    return;
-  }
-
-  if (emailBelongsToAnotherCommissioner(email, request.params.id)) {
-    response.status(400).json({ message: "The email is already in use." });
-    return;
-  }
+  const { email: _email, passwordHash: _passwordHash, ...profile } = request.body;
 
   const commissioner = {
-    ...request.body,
+    ...profile,
     id: request.params.id,
     email: normalizeEmail(email),
     passwordHash: passwordHash.trim(),

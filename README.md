@@ -44,3 +44,4 @@ Already implemented API Endpoints are:
     - Commissions
     - Commissioners
     - Artists
+    - Registrations

@@ -8,8 +8,6 @@ let artists = [
     surname: "Painter",
     name: "Alex",
     biography: "A sample artist for the in-memory API data.",
-    email: "alex.painter@example.com",
-    passwordHash: "sample-password-hash",
     city: "Berlin",
     zipCode: "10115",
     country: "Germany",
@@ -18,16 +16,6 @@ let artists = [
 ];
 
 export const getArtist = (id) => artists.find((artist) => artist.id === id);
-const normalizeEmail = (email) => email.trim().toLowerCase();
-const hasRequiredCredentials = ({ email, passwordHash }) =>
-  typeof email === "string" &&
-  Boolean(email.trim()) &&
-  typeof passwordHash === "string" &&
-  Boolean(passwordHash.trim());
-const emailBelongsToAnotherArtist = (email, id) =>
-  artists.some(
-    (artist) => artist.id !== id && normalizeEmail(artist.email) === normalizeEmail(email),
-  );
 const hasValidPortfolioPictures = (portfolioPictures) =>
   portfolioPictures === undefined ||
   (Array.isArray(portfolioPictures) && portfolioPictures.length <= 4);
@@ -48,17 +36,8 @@ router.get("/artist/:id", (request, response) => {
 });
 
 router.post("/artist", (request, response) => {
-  const { email, passwordHash, portfolioPictures } = request.body;
-
-  if (!hasRequiredCredentials({ email, passwordHash })) {
-    response.status(400).json({ message: "An email and passwordHash are required." });
-    return;
-  }
-
-  if (emailBelongsToAnotherArtist(email)) {
-    response.status(400).json({ message: "The email is already in use." });
-    return;
-  }
+  const { email: _email, passwordHash: _passwordHash, portfolioPictures, ...profile } =
+    request.body;
 
   if (!hasValidPortfolioPictures(portfolioPictures)) {
     response.status(400).json({ message: "An artist can have at most 4 portfolio pictures." });
@@ -67,9 +46,8 @@ router.post("/artist", (request, response) => {
 
   const artist = {
     id: randomUUID(),
-    ...request.body,
-    email: normalizeEmail(email),
-    passwordHash: passwordHash.trim(),
+    ...profile,
+    ...(portfolioPictures === undefined ? {} : { portfolioPictures }),
   };
 
   artists = [artist, ...artists];
@@ -84,17 +62,8 @@ router.put("/artist/:id", (request, response) => {
     return;
   }
 
-  const { email, passwordHash, portfolioPictures } = request.body;
-
-  if (!hasRequiredCredentials({ email, passwordHash })) {
-    response.status(400).json({ message: "An email and passwordHash are required." });
-    return;
-  }
-
-  if (emailBelongsToAnotherArtist(email, request.params.id)) {
-    response.status(400).json({ message: "The email is already in use." });
-    return;
-  }
+  const { email: _email, passwordHash: _passwordHash, portfolioPictures, ...profile } =
+    request.body;
 
   if (!hasValidPortfolioPictures(portfolioPictures)) {
     response.status(400).json({ message: "An artist can have at most 4 portfolio pictures." });
@@ -102,10 +71,9 @@ router.put("/artist/:id", (request, response) => {
   }
 
   const artist = {
-    ...request.body,
+    ...profile,
     id: request.params.id,
-    email: normalizeEmail(email),
-    passwordHash: passwordHash.trim(),
+    ...(portfolioPictures === undefined ? {} : { portfolioPictures }),
   };
   artists[artistIndex] = artist;
   response.json(artist);
