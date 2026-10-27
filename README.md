@@ -48,3 +48,4 @@ Already implemented API Endpoints are:
     - Art groups
     - Chats
 
+Now that the API is set, I can continue working on implementing new screens that correspond to the API Design

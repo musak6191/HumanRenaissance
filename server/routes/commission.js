@@ -12,7 +12,6 @@ let commissions = [
     artistIds: ["sample-artist-1"],
     started: false,
     fusionCommission: false,
-    title: "A quiet portrait of becoming",
     prompt:
       "Create an intimate oil portrait of a woman at dawn, surrounded by wild fennel and soft blue shadows. It should feel like the first page of a new chapter.",
     budget: 850,
@@ -26,7 +25,6 @@ let commissions = [
     artistIds: ["sample-artist-1"],
     started: false,
     fusionCommission: false,
-    title: "The city that lives in rain",
     prompt:
       "A cinematic, slightly surreal painting of a rainy Lisbon street at night. Warm windows should glow against indigo pavement, with one red umbrella as the only bright colour.",
     budget: 1200,
@@ -40,7 +38,6 @@ let commissions = [
     artistIds: ["sample-artist-1"],
     started: false,
     fusionCommission: false,
-    title: "A garden for my grandmother",
     prompt:
       "Illustrate a botanical garden filled with the flowers my grandmother grew: dahlias, sweet peas and lavender. Make it feel like a memory held in sunlight.",
     budget: 500,
@@ -57,7 +54,28 @@ const hasValidArtists = (artistIds, fusionCommission) =>
   (fusionCommission ? artistIds.length >= 2 : artistIds.length === 1) &&
   new Set(artistIds).size === artistIds.length &&
   artistIds.every((artistId) => typeof artistId === "string" && getArtist(artistId));
-const hasValidCommissionDetails = ({ commissionerId, artistIds, started, fusionCommission }) =>
+const hasValidCommissionCreationDetails = ({
+  commissionerId,
+  artistIds,
+  started,
+  fusionCommission,
+}) =>
+  typeof commissionerId === "string" &&
+  Boolean(getCommissioner(commissionerId)) &&
+  typeof started === "boolean" &&
+  typeof fusionCommission === "boolean" &&
+  Array.isArray(artistIds) &&
+  new Set(artistIds).size === artistIds.length &&
+  artistIds.every((artistId) => typeof artistId === "string" && getArtist(artistId));
+const hasValidCommissionDetails = ({
+  prompt,
+  commissionerId,
+  artistIds,
+  started,
+  fusionCommission,
+}) =>
+  typeof prompt === "string" &&
+  Boolean(prompt.trim()) &&
   typeof commissionerId === "string" &&
   Boolean(getCommissioner(commissionerId)) &&
   typeof started === "boolean" &&
@@ -80,14 +98,22 @@ router.get("/commission/:id", (request, response) => {
 });
 
 router.post(["/commission", "/commissions"], (request, response) => {
-  const { title, commissionerId, artistIds, started, fusionCommission } = request.body;
+  const { title: _title, prompt, commissionerId, artistIds, started, fusionCommission } =
+    request.body;
 
-  if (typeof title !== "string" || !title.trim()) {
-    response.status(400).json({ message: "A title is required." });
+  if (typeof prompt !== "string" || !prompt.trim()) {
+    response.status(400).json({ message: "A prompt is required." });
     return;
   }
 
-  if (!hasValidCommissionDetails({ commissionerId, artistIds, started, fusionCommission })) {
+  if (
+    !hasValidCommissionCreationDetails({
+      commissionerId,
+      artistIds,
+      started,
+      fusionCommission,
+    })
+  ) {
     response.status(400).json({
       message: "A valid commissionerId, artistIds, started, and fusionCommission are required.",
     });
@@ -95,10 +121,11 @@ router.post(["/commission", "/commissions"], (request, response) => {
   }
 
   const enteredAt = new Date().toISOString();
+  const { title: _ignoredTitle, ...commissionData } = request.body;
   const commission = {
     id: randomUUID(),
-    ...request.body,
-    title: title.trim(),
+    ...commissionData,
+    prompt: prompt.trim(),
     enteredAt,
     startedAt: started ? enteredAt : null,
   };
@@ -119,15 +146,17 @@ router.put("/commission/:id", (request, response) => {
 
   if (!hasValidCommissionDetails(request.body)) {
     response.status(400).json({
-      message: "A valid commissionerId, artistIds, started, and fusionCommission are required.",
+      message: "A valid prompt, commissionerId, artistIds, started, and fusionCommission are required.",
     });
     return;
   }
 
   const enteredAt = commissions[commissionIndex].enteredAt || new Date().toISOString();
+  const { title: _title, ...commissionData } = request.body;
   const commission = {
-    ...request.body,
+    ...commissionData,
     id: request.params.id,
+    prompt: request.body.prompt.trim(),
     enteredAt,
     startedAt: request.body.started
       ? request.body.startedAt || commissions[commissionIndex].startedAt || new Date().toISOString()
