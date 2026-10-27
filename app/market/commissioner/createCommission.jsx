@@ -2,7 +2,6 @@
 
 export default function CreateCommission({
   form,
-  submitted,
   submitting,
   error,
   onFieldChange,
@@ -80,11 +79,6 @@ export default function CreateCommission({
         {error && (
           <p className="prompt-status" role="alert">
             {error}
-          </p>
-        )}
-        {submitted && (
-          <p className="prompt-status" role="status">
-            Your prompt is ready for the next step.
           </p>
         )}
       </form>

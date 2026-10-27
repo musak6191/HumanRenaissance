@@ -1,6 +1,73 @@
 "use client";
 
-export default function OverviewCommission({ form, onCreate, navigation }) {
+import { useEffect, useState } from "react";
+
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
+function CommissionList({ commissions, emptyMessage }) {
+  if (commissions.length === 0) {
+    return <p className="commission-item">{emptyMessage}</p>;
+  }
+
+  return commissions.map((commission) => (
+    <article className="commission-item" key={commission.id}>
+      <p>{commission.prompt}</p>
+      <span>
+        {Array.isArray(commission.artistIds) ? commission.artistIds.length : 0} assigned artists
+      </span>
+    </article>
+  ));
+}
+
+export default function OverviewCommission({ onCreate, navigation }) {
+  const [commissions, setCommissions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCommissions() {
+      try {
+        const response = await fetch(`${apiBaseUrl}/api/commission`);
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(result.message || "Unable to load commissions.");
+        }
+
+        if (active) {
+          setCommissions(result);
+        }
+      } catch (requestError) {
+        if (active) {
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "Unable to load commissions.",
+          );
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadCommissions();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const activeCommissions = commissions.filter(
+    (commission) => Array.isArray(commission.artistIds) && commission.artistIds.length > 0,
+  );
+  const displayedCommissions = commissions.filter(
+    (commission) => !Array.isArray(commission.artistIds) || commission.artistIds.length === 0,
+  );
+
   return (
     <main className="prompt-page commissions-page">
       {navigation}
@@ -14,9 +81,18 @@ export default function OverviewCommission({ form, onCreate, navigation }) {
           <span>Active</span> commissions
         </h2>
         <div className="commission-list">
-          <article className="commission-item">
-            <p>{"{Prompt}"}</p>
-          </article>
+          {loading ? (
+            <p className="commission-item">Loading commissions...</p>
+          ) : error ? (
+            <p className="commission-item" role="alert">
+              {error}
+            </p>
+          ) : (
+            <CommissionList
+              commissions={activeCommissions}
+              emptyMessage="No active commissions."
+            />
+          )}
         </div>
       </section>
 
@@ -25,10 +101,18 @@ export default function OverviewCommission({ form, onCreate, navigation }) {
           <span>Displayed</span> commissions
         </h2>
         <div className="commission-list">
-          <article className="commission-item">
-            <p>{form.prompt || "{Prompt}"}</p>
-            <span>{form.prompt ? "0 new · 0 total applicants" : "{Amount of applicants}"}</span>
-          </article>
+          {loading ? (
+            <p className="commission-item">Loading commissions...</p>
+          ) : error ? (
+            <p className="commission-item" role="alert">
+              {error}
+            </p>
+          ) : (
+            <CommissionList
+              commissions={displayedCommissions}
+              emptyMessage="No displayed commissions."
+            />
+          )}
         </div>
       </section>
 

@@ -14,7 +14,6 @@ const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function HomePage() {
   const [form, setForm] = useState(initialForm);
-  const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,19 +22,16 @@ export default function HomePage() {
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
-    setSubmitted(false);
     setError("");
   }
 
   function toggleFusion(event) {
     setForm((current) => ({ ...current, fusion: event.target.checked }));
-    setSubmitted(false);
     setError("");
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
-    setSubmitted(false);
     setError("");
     setSubmitting(true);
 
@@ -61,7 +57,7 @@ export default function HomePage() {
         throw new Error(result.message || "Unable to create the commission.");
       }
 
-      setSubmitted(true);
+      setForm(initialForm);
       setScreen("commissions");
     } catch (requestError) {
       setError(
@@ -85,7 +81,6 @@ export default function HomePage() {
   if (screen === "commissions") {
     return (
       <OverviewCommission
-        form={form}
         onCreate={() => setScreen("prompt")}
         navigation={navigation}
       />
@@ -95,7 +90,6 @@ export default function HomePage() {
   return (
     <CreateCommission
       form={form}
-      submitted={submitted}
       submitting={submitting}
       error={error}
       onFieldChange={updateField}
