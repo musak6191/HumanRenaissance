@@ -57,10 +57,9 @@ router.put("/commissioner/:id", (request, response) => {
   const { email: _email, passwordHash: _passwordHash, ...profile } = request.body;
 
   const commissioner = {
-    ...profile,
     id: request.params.id,
-    email: normalizeEmail(email),
-    passwordHash: passwordHash.trim(),
+    ...commissioners[commissionerIndex],
+    ...profile,
   };
   commissioners[commissionerIndex] = commissioner;
   response.json(commissioner);

@@ -4,7 +4,8 @@ import { useState } from "react";
 import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
-import CommissionerNavigation from "./market/commissioner/navigation";
+import ProfileCommissioner from "./myProfile/profileCommissioner";
+import CommissionerNavigation from "./navigation";
 
 const initialForm = {
   prompt: "",
@@ -82,6 +83,10 @@ export default function HomePage() {
         setMenuOpen(false);
         setScreen("commissions");
       }}
+      onProfile={() => {
+        setMenuOpen(false);
+        setScreen("profile");
+      }}
     />
   );
 
@@ -104,6 +109,15 @@ export default function HomePage() {
       <ViewCommission
         commissionId={selectedCommissionId}
         isActive={selectedCommissionIsActive}
+        onBack={() => setScreen("commissions")}
+        navigation={navigation}
+      />
+    );
+  }
+
+  if (screen === "profile") {
+    return (
+      <ProfileCommissioner
         onBack={() => setScreen("commissions")}
         navigation={navigation}
       />

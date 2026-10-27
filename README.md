@@ -49,3 +49,7 @@ Already implemented API Endpoints are:
     - Chats
 
 Now that the API is set, I can continue working on implementing new screens that correspond to the API Design
+
+## Further implementation of Screens
+
+added a User Profile Screen for commissioners
