@@ -27,3 +27,5 @@ Artists have the fields `surname`, `name`, `biography`, `email`, `passwordHash`,
 Registrations are stored in memory and own the user's `email` and `password`. Use `GET`, `POST`, `PUT /api/auth/registration/:id`, and `DELETE /api/auth/registration/:id` for registration management. Artist and commissioner profiles no longer contain authentication fields.
 
 Art groups contain one unique `artStyle`, up to three string values in `interests`, an `artistIds` array, and a `visibility` of `public`, `private`, or `invitation`. Artist IDs must reference existing artists.
+
+Chats connect exactly one artist with one commissioner and contain text, picture, or speech-memo messages. Pictures and speech memos are currently stored as string references in RAM; binary file storage and authentication will be added later.

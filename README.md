@@ -46,3 +46,5 @@ Already implemented API Endpoints are:
     - Artists
     - Registrations
     - Art groups
+    - Chats
+

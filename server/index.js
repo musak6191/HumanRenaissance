@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import artistRouter from "./routes/artist.js";
 import artGroupRouter from "./routes/artgroup.js";
+import chatRouter from "./routes/chat.js";
 import commissionRouter from "./routes/commission.js";
 import commissionerRouter from "./routes/commissioner.js";
 import registrationRouter from "./routes/registration.js";
@@ -16,6 +17,7 @@ app.use("/api", commissionerRouter);
 app.use("/api", artistRouter);
 app.use("/api", registrationRouter);
 app.use("/api", artGroupRouter);
+app.use("/api", chatRouter);
 
 app.listen(port, () => {
   console.log(`Human Renaissance API listening on http://localhost:${port}`);
