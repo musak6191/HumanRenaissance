@@ -1,6 +1,6 @@
 "use client";
 
-export default function CommissionerNavigation({ menuOpen, onToggle, onClose }) {
+export default function CommissionerNavigation({ menuOpen, onToggle, onClose, onMarket }) {
   return (
     <>
       <button
@@ -28,9 +28,9 @@ export default function CommissionerNavigation({ menuOpen, onToggle, onClose }) 
               <span>H</span>
               <strong>Human renaissance</strong>
             </div>
-            <a className="navigation-link" href="#market" onClick={onClose}>
+            <button className="navigation-link" type="button" onClick={onMarket}>
               Market
-            </a>
+            </button>
           </nav>
         </div>
       )}

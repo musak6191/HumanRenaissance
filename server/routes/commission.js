@@ -95,6 +95,23 @@ const hasValidCommissionDetails = ({
   typeof started === "boolean" &&
   typeof fusionCommission === "boolean" &&
   hasValidArtists(artistIds, fusionCommission);
+const hasValidCommissionUpdateDetails = ({
+  prompt,
+  commissionerId,
+  artistIds,
+  started,
+  fusionCommission,
+}) =>
+  typeof prompt === "string" &&
+  Boolean(prompt.trim()) &&
+  typeof commissionerId === "string" &&
+  Boolean(getCommissioner(commissionerId)) &&
+  typeof started === "boolean" &&
+  typeof fusionCommission === "boolean" &&
+  Array.isArray(artistIds) &&
+  new Set(artistIds).size === artistIds.length &&
+  artistIds.every((artistId) => typeof artistId === "string" && getArtist(artistId)) &&
+  (artistIds.length === 0 || hasValidArtists(artistIds, fusionCommission));
 
 router.get(["/commission", "/commissions"], (_request, response) => {
   response.json(commissions);
@@ -158,7 +175,7 @@ router.put("/commission/:id", (request, response) => {
     return;
   }
 
-  if (!hasValidCommissionDetails(request.body)) {
+  if (!hasValidCommissionUpdateDetails(request.body)) {
     response.status(400).json({
       message: "A valid prompt, commissionerId, artistIds, started, and fusionCommission are required.",
     });

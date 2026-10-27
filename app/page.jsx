@@ -77,6 +77,10 @@ export default function HomePage() {
       menuOpen={menuOpen}
       onToggle={() => setMenuOpen((current) => !current)}
       onClose={() => setMenuOpen(false)}
+      onMarket={() => {
+        setMenuOpen(false);
+        setScreen("commissions");
+      }}
     />
   );
 

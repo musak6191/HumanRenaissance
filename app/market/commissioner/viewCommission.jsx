@@ -24,6 +24,7 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [noMoreApplicants, setNoMoreApplicants] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -75,7 +76,8 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
     return applicantIds
       .map((artistId) => artists.find((artist) => artist.id === artistId))
       .filter(Boolean)
-      .filter((artist) => !acceptedArtists.includes(artist.id));
+      .filter((artist) => !acceptedArtists.includes(artist.id))
+      .filter((artist) => !commission.declinedApplicantIds?.includes(artist.id));
   }, [artists, commission, acceptedArtists]);
 
   const applicant = applicants[currentApplicant];
@@ -91,6 +93,16 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
   useEffect(() => {
     setCurrentApplicant(0);
   }, [acceptedArtists]);
+
+  useEffect(() => {
+    if (
+      commission &&
+      applicants.length === 0 &&
+      commission.declinedApplicantIds?.length > 0
+    ) {
+      setNoMoreApplicants(true);
+    }
+  }, [applicants.length, commission]);
 
   async function updateAcceptedArtists(nextAcceptedArtists) {
     if (!commission) {
@@ -133,11 +145,49 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
     }
   }
 
-  function declineApplicant() {
-    if (currentApplicant < applicants.length - 1) {
-      setCurrentApplicant((current) => current + 1);
-    } else {
-      setError("There are no more applicants for this commission.");
+  async function declineApplicant() {
+    if (!applicant || !commission) {
+      return;
+    }
+
+    const declinedApplicantIds = [
+      ...(commission.declinedApplicantIds || []),
+      applicant.id,
+    ];
+    setSaving(true);
+    setError("");
+
+    try {
+      const response = await fetch(`${apiBaseUrl}/api/commission/${commission.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...commission,
+          declinedApplicantIds,
+        }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to decline this applicant.");
+      }
+
+      setCommission(result);
+      if (currentApplicant >= applicants.length - 1) {
+        setNoMoreApplicants(true);
+      } else {
+        setCurrentApplicant((current) => current + 1);
+      }
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Unable to decline this applicant.",
+      );
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -182,7 +232,7 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
                 Choose the 2. artist for this fusion commission.
               </p>
             )}
-            {applicant ? (
+            {applicant && !noMoreApplicants ? (
               <>
                 <div className="portfolio-carousel">
                   {(applicant.portfolioPictures || []).map((picture) => (
@@ -197,14 +247,22 @@ export default function ViewCommission({ commissionId, onBack, navigation }) {
                 <p className="artist-biography">{applicant.biography || "No biography provided."}</p>
               </>
             ) : (
-              <p className="commission-view-message">No applicants yet.</p>
+              <p className="no-more-applicants">No more applicants</p>
             )}
             {error && commission && <p className="prompt-status" role="alert">{error}</p>}
-            <div className="applicant-actions">
+            {!noMoreApplicants && <div className="applicant-actions">
               <button type="button" className="decline-applicant" aria-label="Decline applicant" onClick={declineApplicant} disabled={!applicant || saving}>×</button>
               <button type="button" className="accept-applicant" aria-label="Accept applicant" onClick={acceptApplicant} disabled={!applicant || saving}>✓</button>
-            </div>
+            </div>}
           </section>
+          <button
+            className="commission-back-button"
+            type="button"
+            aria-label="Back to commissions"
+            onClick={onBack}
+          >
+            <span aria-hidden="true">←</span>
+          </button>
         </>
       )}
     </main>

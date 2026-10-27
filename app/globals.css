@@ -23,7 +23,7 @@ body { margin: 0; }
 .navigation-brand { height: 111px; text-align: center; box-shadow: inset 0 1px 5px rgb(74 74 74 / 18%); }
 .navigation-brand span { display: block; margin-top: 12px; color: #ff8800; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 47px; font-style: italic; letter-spacing: var(--serif-letter-spacing); line-height: 1; }
 .navigation-brand strong { display: block; margin-top: 10px; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1; }
-.navigation-link { display: inline-block; position: relative; z-index: 0; margin: 22px 0 0 35px; color: #4a4a4a; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-decoration: none; }
+.navigation-link { display: inline-block; position: relative; z-index: 0; margin: 22px 0 0 35px; border: 0; padding: 0; color: #4a4a4a; background: transparent; cursor: pointer; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-decoration: none; }
 .navigation-link::after { position: absolute; z-index: -1; content: ""; left: -3px; right: -4px; bottom: 1px; height: 10px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .4; }
 .prompt-header { padding-top: 17px; color: #ff8800; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 46px; font-style: italic; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-align: center; }
 .prompt-form { width: min(748px, calc(100% - 40px)); margin: 35px auto 0; }
@@ -47,6 +47,9 @@ body { margin: 0; }
 .new-commission-button:hover span, .new-commission-button:focus-visible span { transform: scale(1.08); }
 .new-commission-button:focus-visible { outline: 2px solid #ff8800; outline-offset: 5px; }
 .view-commission-page { padding-bottom: 25px; }
+.commission-back-button { display: block; width: 48px; height: 40px; margin: 24px auto 18px; border: 0; padding: 0; color: #ff8800; background: transparent; cursor: pointer; }
+.commission-back-button span { display: block; font-size: 42px; line-height: 32px; }
+.commission-back-button:focus-visible { outline: 2px solid #ff8800; outline-offset: 3px; }
 .commission-view-title { margin: 5px 0 23px; color: #4a4a4a; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 46px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1; text-align: center; }
 .commission-view-prompt { width: min(748px, calc(100% - 40px)); margin: 0 auto 30px; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); line-height: 1.1; text-align: center; }
 .applicant-panel { position: relative; width: min(748px, calc(100% - 40px)); min-height: 515px; margin: 0 auto; padding: 14px 32px 72px; box-shadow: inset 0 1px 5px rgb(74 74 74 / 28%); }
@@ -66,6 +69,7 @@ body { margin: 0; }
 .decline-applicant { color: #e60000; }
 .accept-applicant { color: #d97700; }
 .commission-view-message { margin: 40px auto; text-align: center; }
+.no-more-applicants { display: grid; min-height: 300px; margin: 0; place-items: center; color: #4a4a4a; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 38px; letter-spacing: var(--serif-letter-spacing); text-align: center; }
 .prompt-introduction h1 { margin: 0; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1.05; }
 .prompt-introduction h1 em, .gage-field > span { isolation: isolate; position: relative; z-index: 0; }
 .prompt-introduction h1 em::after, .gage-field > span::after { position: absolute; z-index: -1; content: ""; left: -3px; right: -4px; bottom: 5px; height: 10px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .40; }
