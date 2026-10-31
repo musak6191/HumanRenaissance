@@ -14,6 +14,9 @@ build/
 .env.*
 !.env.example
 
+# Local SQLite database
+*.db
+
 # Logs
 *.log
 npm-debug.log*

@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Registration {
+  id           String @id
+  email        String @unique
+  passwordHash String @map("password_hash")
+
+  @@map("registrations")
+}
+
+model Artist {
+  id                     String                   @id
+  surname                String?
+  name                   String?
+  biography              String?
+  city                   String?
+  zipCode                String?                  @map("zip_code")
+  country                String?
+  portfolioPictures      ArtistPortfolioPicture[]
+  commissions            CommissionArtist[]
+  commissionApplications CommissionApplicant[]
+  artGroupMembership     ArtGroupArtist?
+  chats                  Chat[]
+
+  @@map("artists")
+}
+
+model ArtistPortfolioPicture {
+  artistId String @map("artist_id")
+  picture  String
+  position Int
+  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([artistId, position])
+  @@unique([artistId, picture])
+  @@map("artist_portfolio_pictures")
+}
+
+model Commissioner {
+  id          String       @id
+  surname     String?
+  name        String?
+  biography   String?
+  city        String?
+  zipCode     String?      @map("zip_code")
+  country     String?
+  commissions Commission[]
+  chats       Chat[]
+
+  @@map("commissioners")
+}
+
+model Commission {
+  id               String                @id
+  commissionerId   String                @map("commissioner_id")
+  prompt           String
+  budget           Float?
+  timeline         String?
+  started          Boolean               @default(false)
+  fusionCommission Boolean               @default(false) @map("fusion_commission")
+  enteredAt        DateTime              @map("entered_at")
+  startedAt        DateTime?             @map("started_at")
+  commissioner     Commissioner          @relation(fields: [commissionerId], references: [id], onDelete: Cascade)
+  artists          CommissionArtist[]
+  applicants       CommissionApplicant[]
+
+  @@index([commissionerId])
+  @@map("commissions")
+}
+
+model CommissionArtist {
+  commissionId String     @map("commission_id")
+  artistId     String     @map("artist_id")
+  commission   Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+  artist       Artist     @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([commissionId, artistId])
+  @@index([artistId])
+  @@map("commission_artists")
+}
+
+model CommissionApplicant {
+  commissionId String     @map("commission_id")
+  artistId     String     @map("artist_id")
+  commission   Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+  artist       Artist     @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([commissionId, artistId])
+  @@index([artistId])
+  @@map("commission_applicants")
+}
+
+model ArtGroup {
+  id         String             @id
+  artStyle   String             @unique @map("art_style")
+  visibility String
+  interests  ArtGroupInterest[]
+  artists    ArtGroupArtist[]
+
+  @@map("art_groups")
+}
+
+model ArtGroupInterest {
+  artGroupId String   @map("art_group_id")
+  interest   String
+  position   Int
+  artGroup   ArtGroup @relation(fields: [artGroupId], references: [id], onDelete: Cascade)
+
+  @@id([artGroupId, position])
+  @@unique([artGroupId, interest])
+  @@map("art_group_interests")
+}
+
+model ArtGroupArtist {
+  artGroupId String   @map("art_group_id")
+  artistId   String   @unique @map("artist_id")
+  artGroup   ArtGroup @relation(fields: [artGroupId], references: [id], onDelete: Cascade)
+  artist     Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
+
+  @@id([artGroupId, artistId])
+  @@index([artistId])
+  @@map("art_group_artists")
+}
+
+model Chat {
+  id             String       @id
+  artistId       String       @map("artist_id")
+  commissionerId String       @map("commissioner_id")
+  createdAt      DateTime     @map("created_at")
+  artist         Artist       @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  commissioner   Commissioner @relation(fields: [commissionerId], references: [id], onDelete: Cascade)
+  messages       Message[]
+
+  @@index([artistId])
+  @@index([commissionerId])
+  @@map("chats")
+}
+
+model Message {
+  id         String   @id
+  chatId     String   @map("chat_id")
+  senderId   String   @map("sender_id")
+  senderType String   @map("sender_type")
+  type       String
+  content    String?
+  picture    String?
+  speechMemo String?  @map("speech_memo")
+  sentAt     DateTime @map("sent_at")
+  chat       Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@index([chatId, sentAt])
+  @@map("messages")
+}

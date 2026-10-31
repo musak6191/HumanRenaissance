@@ -11,6 +11,20 @@ There is another Readme called README_AI.md. It´s for the distinction between m
 Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
 Backend: Express (Port 3000)
 
+Database: SQLite via Prisma ORM
+
+### Prisma setup
+
+Copy `.env.example` to `.env`, then run:
+
+```bash
+npm install
+npx prisma migrate dev
+npx prisma generate
+```
+
+The SQLite database is created as `dev.db` in the project root.
+
 Ressources: Artist, Commissioner, Commission, Artgroups, Artboard, Chats, Calls
 Hierarchy: 1 Commission belongs to 1 commissioner
             n Artists apply to one commission
@@ -89,7 +103,11 @@ Already implemented API Endpoints are:
 
 Now that the API is set, I can continue working on implementing new screens that correspond to the API Design
 
-## Further implementation of Screens
+## Further implementation of Screens 26_10_2026
 
 added a User Profile Screen for commissioners
 
+## Set up a SQLite databank and installed Prisma as ORM 31_10_2026
+
+Replaced API Handlers:
+- Artgroups

@@ -1,6 +1,7 @@
 import express from "express";
 import { randomUUID } from "node:crypto";
 import { getArtist } from "./artist.js";
+import prisma from "../prisma.js";
 
 const router = express.Router();
 let artGroups = [];
@@ -32,22 +33,35 @@ const validArtGroupData = ({ artStyle, interests, artistIds, visibility }) =>
   validArtistIds(artistIds) &&
   validVisibility(visibility);
 
-router.get("/artgroup", (_request, response) => {
-  response.json(artGroups);
-});
-
-router.get("/artgroup/:id", (request, response) => {
-  const artGroup = getArtGroup(request.params.id);
-
-  if (!artGroup) {
-    response.status(404).json({ message: "Art group not found." });
-    return;
+router.get("/artgroup", async (_request, response) => {
+  try {
+    const artGroupsFromDatabase = await prisma.artGroup.findMany();
+    response.json(artGroupsFromDatabase);
+  } catch (error) {
+    console.error("Failed to load art groups from the database.", error);
+    response.status(500).json({ message: "Failed to load art groups." });
   }
-
-  response.json(artGroup);
 });
 
-router.post("/artgroup", (request, response) => {
+router.get("/artgroup/:id", async (request, response) => {
+  try {
+    const artGroup = await prisma.artGroup.findUnique({
+      where: { id: request.params.id },
+    });
+
+    if (!artGroup) {
+      response.status(404).json({ message: "Art group not found." });
+      return;
+    }
+
+    response.json(artGroup);
+  } catch (error) {
+    console.error("Failed to load the art group from the database.", error);
+    response.status(500).json({ message: "Failed to load art group." });
+  }
+});
+
+router.post("/artgroup", async (request, response) => {
   const { artStyle, interests, artistIds, visibility } = request.body;
 
   if (typeof artStyle !== "string" || !artStyle.trim()) {
@@ -68,36 +82,42 @@ router.post("/artgroup", (request, response) => {
     return;
   }
 
-  const artGroup = {
-    id: randomUUID(),
-    artStyle: artStyle.trim(),
-    interests: interests || [],
-    artistIds,
-    visibility,
-  };
-  artGroups = [artGroup, ...artGroups];
-  response.status(201).json(artGroup);
+  try {
+    const artGroup = await prisma.artGroup.create({
+      data: {
+        id: randomUUID(),
+        artStyle: artStyle.trim(),
+        visibility,
+        interests: {
+          create: (interests || []).map((interest, position) => ({
+            interest: interest.trim(),
+            position,
+          })),
+        },
+        artists: {
+          create: artistIds.map((artistId) => ({
+            artist: { connect: { id: artistId } },
+          })),
+        },
+      },
+      include: {
+        interests: true,
+        artists: true,
+      },
+    });
+
+    response.status(201).json(artGroup);
+  } catch (error) {
+    console.error("Failed to create the art group in the database.", error);
+    response.status(500).json({ message: "Failed to create art group." });
+  }
 });
 
-router.put("/artgroup/:id", (request, response) => {
-  const artGroupIndex = artGroups.findIndex(
-    (artGroup) => artGroup.id === request.params.id,
-  );
-
-  if (artGroupIndex === -1) {
-    response.status(404).json({ message: "Art group not found." });
-    return;
-  }
-
+router.put("/artgroup/:id", async (request, response) => {
   const { artStyle, interests, artistIds, visibility } = request.body;
 
   if (typeof artStyle !== "string" || !artStyle.trim()) {
     response.status(400).json({ message: "An artStyle is required." });
-    return;
-  }
-
-  if (artStyleIsInUse(artStyle, request.params.id)) {
-    response.status(400).json({ message: "The artStyle is already in use." });
     return;
   }
 
@@ -109,29 +129,82 @@ router.put("/artgroup/:id", (request, response) => {
     return;
   }
 
-  const artGroup = {
-    id: request.params.id,
-    artStyle: artStyle.trim(),
-    interests: interests || [],
-    artistIds,
-    visibility,
-  };
-  artGroups[artGroupIndex] = artGroup;
-  response.json(artGroup);
+  try {
+    const existingArtGroup = await prisma.artGroup.findUnique({
+      where: { id: request.params.id },
+    });
+
+    if (!existingArtGroup) {
+      response.status(404).json({ message: "Art group not found." });
+      return;
+    }
+
+    const artStylesInUse = await prisma.artGroup.findMany({
+      where: { NOT: { id: request.params.id } },
+      select: { artStyle: true },
+    });
+
+    if (
+      artStylesInUse.some(
+        (existing) => normalizeArtStyle(existing.artStyle) === normalizeArtStyle(artStyle),
+      )
+    ) {
+      response.status(400).json({ message: "The artStyle is already in use." });
+      return;
+    }
+
+    const artGroup = await prisma.artGroup.update({
+      where: { id: request.params.id },
+      data: {
+        artStyle: artStyle.trim(),
+        visibility,
+        interests: {
+          deleteMany: {},
+          create: (interests || []).map((interest, position) => ({
+            interest: interest.trim(),
+            position,
+          })),
+        },
+        artists: {
+          deleteMany: {},
+          create: artistIds.map((artistId) => ({
+            artist: { connect: { id: artistId } },
+          })),
+        },
+      },
+      include: {
+        interests: true,
+        artists: true,
+      },
+    });
+
+    response.json(artGroup);
+  } catch (error) {
+    console.error("Failed to update the art group in the database.", error);
+    response.status(500).json({ message: "Failed to update art group." });
+  }
 });
 
-router.delete("/artgroup/:id", (request, response) => {
-  const artGroupIndex = artGroups.findIndex(
-    (artGroup) => artGroup.id === request.params.id,
-  );
+router.delete("/artgroup/:id", async (request, response) => {
+  try {
+    const artGroup = await prisma.artGroup.findUnique({
+      where: { id: request.params.id },
+    });
 
-  if (artGroupIndex === -1) {
-    response.status(404).json({ message: "Art group not found." });
-    return;
+    if (!artGroup) {
+      response.status(404).json({ message: "Art group not found." });
+      return;
+    }
+
+    await prisma.artGroup.delete({
+      where: { id: request.params.id },
+    });
+
+    response.status(204).send();
+  } catch (error) {
+    console.error("Failed to delete the art group from the database.", error);
+    response.status(500).json({ message: "Failed to delete art group." });
   }
-
-  artGroups.splice(artGroupIndex, 1);
-  response.status(204).send();
 });
 
 export default router;
