@@ -111,3 +111,4 @@ added a User Profile Screen for commissioners
 
 Replaced API Handlers:
 - Artgroups
+- Artists
