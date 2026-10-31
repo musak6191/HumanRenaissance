@@ -113,3 +113,4 @@ Replaced API Handlers:
 - Artgroups
 - Artists
 - Commissioner
+- Commissions
