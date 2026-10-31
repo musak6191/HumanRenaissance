@@ -1,5 +1,6 @@
 import express from "express";
 import { randomUUID } from "node:crypto";
+import prisma from "../prisma.js";
 
 const router = express.Router();
 export let commissioners = [
@@ -17,66 +18,127 @@ export let commissioners = [
 export const getCommissioner = (id) =>
   commissioners.find((commissioner) => commissioner.id === id);
 
-router.get("/commissioner", (_request, response) => {
-  response.json(commissioners);
-});
-
-router.get("/commissioner/:id", (request, response) => {
-  const commissioner = getCommissioner(request.params.id);
-
-  if (!commissioner) {
-    response.status(404).json({ message: "Commissioner not found." });
-    return;
+router.get("/commissioner", async (_request, response) => {
+  try {
+    const commissionersFromDatabase = await prisma.commissioner.findMany();
+    response.json(commissionersFromDatabase);
+  } catch (error) {
+    console.error("Failed to load commissioners from the database.", error);
+    response.status(500).json({ message: "Failed to load commissioners." });
   }
-
-  response.json(commissioner);
 });
 
-router.post("/commissioner", (request, response) => {
-  const { email: _email, passwordHash: _passwordHash, ...profile } = request.body;
+router.get("/commissioner/:id", async (request, response) => {
+  try {
+    const commissioner = await prisma.commissioner.findUnique({
+      where: { id: request.params.id },
+    });
 
-  const commissioner = {
-    id: randomUUID(),
-    ...profile,
-  };
+    if (!commissioner) {
+      response.status(404).json({ message: "Commissioner not found." });
+      return;
+    }
 
-  commissioners = [commissioner, ...commissioners];
-  response.status(201).json(commissioner);
-});
-
-router.put("/commissioner/:id", (request, response) => {
-  const commissionerIndex = commissioners.findIndex(
-    (commissioner) => commissioner.id === request.params.id,
-  );
-
-  if (commissionerIndex === -1) {
-    response.status(404).json({ message: "Commissioner not found." });
-    return;
+    response.json(commissioner);
+  } catch (error) {
+    console.error("Failed to load the commissioner from the database.", error);
+    response.status(500).json({ message: "Failed to load commissioner." });
   }
-
-  const { email: _email, passwordHash: _passwordHash, ...profile } = request.body;
-
-  const commissioner = {
-    id: request.params.id,
-    ...commissioners[commissionerIndex],
-    ...profile,
-  };
-  commissioners[commissionerIndex] = commissioner;
-  response.json(commissioner);
 });
 
-router.delete("/commissioner/:id", (request, response) => {
-  const commissionerIndex = commissioners.findIndex(
-    (commissioner) => commissioner.id === request.params.id,
-  );
+router.post("/commissioner", async (request, response) => {
+  const {
+    email: _email,
+    passwordHash: _passwordHash,
+    surname,
+    name,
+    biography,
+    city,
+    zipCode,
+    country,
+  } = request.body;
 
-  if (commissionerIndex === -1) {
-    response.status(404).json({ message: "Commissioner not found." });
-    return;
+  try {
+    const commissioner = await prisma.commissioner.create({
+      data: {
+        id: randomUUID(),
+        surname,
+        name,
+        biography,
+        city,
+        zipCode,
+        country,
+      },
+    });
+
+    response.status(201).json(commissioner);
+  } catch (error) {
+    console.error("Failed to create the commissioner in the database.", error);
+    response.status(500).json({ message: "Failed to create commissioner." });
   }
+});
 
-  commissioners.splice(commissionerIndex, 1);
-  response.status(204).send();
+router.put("/commissioner/:id", async (request, response) => {
+  const {
+    email: _email,
+    passwordHash: _passwordHash,
+    surname,
+    name,
+    biography,
+    city,
+    zipCode,
+    country,
+  } = request.body;
+
+  try {
+    const existingCommissioner = await prisma.commissioner.findUnique({
+      where: { id: request.params.id },
+    });
+
+    if (!existingCommissioner) {
+      response.status(404).json({ message: "Commissioner not found." });
+      return;
+    }
+
+    const commissioner = await prisma.commissioner.update({
+      where: { id: request.params.id },
+      data: {
+        surname,
+        name,
+        biography,
+        city,
+        zipCode,
+        country,
+      },
+    });
+
+    response.json(commissioner);
+  } catch (error) {
+    console.error("Failed to update the commissioner in the database.", error);
+    response.status(500).json({ message: "Failed to update commissioner." });
+  }
+});
+
+router.delete("/commissioner/:id", async (request, response) => {
+  try {
+    const commissioner = await prisma.commissioner.findUnique({
+      where: { id: request.params.id },
+    });
+
+    if (!commissioner) {
+      response.status(404).json({ message: "Commissioner not found." });
+      return;
+    }
+
+    await prisma.commissioner.delete({
+      where: { id: request.params.id },
+    });
+
+    response.status(204).send();
+  } catch (error) {
+    console.error("Failed to delete the commissioner from the database.", error);
+    response.status(500).json({ message: "Failed to delete commissioner." });
+  }
 });
 
 export default router;
