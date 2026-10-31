@@ -29,3 +29,20 @@ Registrations are stored in memory and own the user's `email` and `password`. Us
 Art groups contain one unique `artStyle`, up to three string values in `interests`, an `artistIds` array, and a `visibility` of `public`, `private`, or `invitation`. Artist IDs must reference existing artists.
 
 Chats connect exactly one artist with one commissioner and contain text, picture, or speech-memo messages. Pictures and speech memos are currently stored as string references in RAM; binary file storage and authentication will be added later.
+
+## Data schema
+
+The persistent-storage schema for the current API resources is available at
+[`server/schema.sql`](server/schema.sql). It is SQLite-compatible and
+normalizes API arrays into join tables:
+
+- `commission_artists` stores accepted `artistIds`.
+- `commission_applicants` stores `applicantIds`.
+- `art_group_artists` stores an art group's `artistIds`.
+- `artist_portfolio_pictures` and `art_group_interests` preserve array order.
+- `messages` stores the type-specific `content`, `picture`, or `speechMemo`
+  value used by the chat endpoints.
+
+The registration route accepts a password, but a database integration must hash
+it into `registrations.password_hash` and must never persist or return the raw
+password.

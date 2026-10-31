@@ -19,6 +19,45 @@ Hierarchy: 1 Commission belongs to 1 commissioner
             1 Artgroup can have 1 Artboard
             n Artists can have Chats and Calls with 1 Commissioner
 
+Data Scheme:
+
+registrations       artists              commissioners
+--------------      ----------------     ----------------
+id                  id                   id
+email               surname               surname
+password_hash       name                  name
+                    biography             biography
+                    city                  city
+                    zip_code              zip_code
+                    country               country
+
+
+commissions         art_groups            chats
+----------------    ----------------      ----------------
+id                  id                    id
+commissionerId FK   artStyle              artistId FK
+prompt              visibility            commissionerId FK
+budget                                      createdAt
+timeline
+started
+fusionCommission
+
+
+commission_artists  commission_applicants art_group_artists
+------------------  --------------------  ----------------
+commissionId FK      commissionId FK       artGroupId FK
+artistId FK          artistId FK           artistId FK UNIQUE
+
+
+messages
+--------
+id
+chatId FK
+senderId
+senderType
+type
+content / picture / speechMemo
+sentAt
 
 # Documentation
 
@@ -53,3 +92,4 @@ Now that the API is set, I can continue working on implementing new screens that
 ## Further implementation of Screens
 
 added a User Profile Screen for commissioners
+
