@@ -114,3 +114,4 @@ Replaced API Handlers:
 - Artists
 - Commissioner
 - Commissions
+- Chat
