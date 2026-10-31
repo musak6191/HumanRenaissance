@@ -115,3 +115,5 @@ Replaced API Handlers:
 - Commissioner
 - Commissions
 - Chat
+
+Data persistancy is now secured with SQLite and Prisma ORM. This is of course not the final solution. For the deployment I will probably migrate PostGreSQL and need a secondary data bank for the Portfolio Pictures, for that I will use a S3 - data bank. Next up is authentification :thumpsup:
