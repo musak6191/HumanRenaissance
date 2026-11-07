@@ -66,3 +66,5 @@ Authentication endpoints:
 - `GET /api/auth/me` - check the current authenticated session
 
 The server requires `JWT_SECRET` in `.env` to issue and verify authentication cookies.
+
+Clerk now provides the Next.js authentication flow. The root route is protected by Clerk middleware, and sign-in/sign-up are available at `/sign-in` and `/sign-up`. The existing SQLite registration records are retained for migration planning; they are not automatically imported into Clerk.

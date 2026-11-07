@@ -1,5 +1,7 @@
 "use client";
 
+import { UserButton } from "@clerk/nextjs";
+
 export default function CommissionerNavigation({ menuOpen, onToggle, onClose, onMarket, onProfile }) {
   return (
     <>
@@ -34,6 +36,9 @@ export default function CommissionerNavigation({ menuOpen, onToggle, onClose, on
             <button className="navigation-link" type="button" onClick={onProfile}>
               Profile
             </button>
+            <div className="navigation-user">
+              <UserButton />
+            </div>
           </nav>
         </div>
       )}
