@@ -13,18 +13,6 @@ Backend: Express (Port 3000)
 
 Database: SQLite via Prisma ORM
 
-### Prisma setup
-
-Copy `.env.example` to `.env`, then run:
-
-```bash
-npm install
-npx prisma migrate dev
-npx prisma generate
-```
-
-The SQLite database is created as `dev.db` in the project root.
-
 Ressources: Artist, Commissioner, Commission, Artgroups, Artboard, Chats, Calls
 Hierarchy: 1 Commission belongs to 1 commissioner
             n Artists apply to one commission
@@ -117,3 +105,7 @@ Replaced API Handlers:
 - Chat
 
 Data persistancy is now secured with SQLite and Prisma ORM. This is of course not the final solution. For the deployment I will probably migrate PostGreSQL and need a secondary data bank for the Portfolio Pictures, for that I will use a S3 - data bank. Next up is authentification :thumpsup:
+
+## Working on AuthN & AuthZ 07_11_2026
+
+Added Post Handlers for /auth/register & /login, password hashes (bcrypt), JWT payloads for authZ and the agent implemented cors for this. I expect a few bugs.

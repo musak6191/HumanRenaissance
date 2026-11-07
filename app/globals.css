@@ -9,6 +9,16 @@
 :root { color: #4a4a4a; background: #fff; font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; }
+.auth-page { display: grid; min-height: 100vh; place-items: center; padding: 24px; background: #fff; font-family: "Abel", sans-serif; }
+.auth-form { display: grid; gap: 16px; width: min(360px, 100%); padding: 32px; box-shadow: inset 0 1px 5px rgb(74 74 74 / 28%); }
+.auth-form h1 { margin: 0 0 8px; color: #ff8800; font-family: "Source Serif 4", serif; font-size: 42px; font-weight: 400; }
+.auth-form label { display: grid; gap: 6px; }
+.auth-form input { width: 100%; padding: 9px; border: 1px solid rgb(74 74 74 / 35%); font: inherit; }
+.auth-form button { border: 0; padding: 10px; color: #fff; background: #ff8800; cursor: pointer; font: inherit; }
+.auth-form button:disabled { cursor: wait; opacity: .65; }
+.auth-form p { margin: 0; }
+.auth-form a { color: #ff8800; }
+.auth-error { color: #b42318; }
 .prompt-page button, .prompt-page input, .prompt-page textarea { font: inherit; }
 .prompt-page { --serif-letter-spacing: -.05em; --sans-letter-spacing: -.02em; min-height: 100vh; background-color: #fff; background-image: radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: 0 0, 3px 4px; background-size: 7px 7px, 11px 11px; color: #4a4a4a; font-family: "Abel", sans-serif; letter-spacing: var(--sans-letter-spacing); }
 .menu-button { position: fixed; z-index: 20; top: 24px; left: 24px; display: flex; flex-direction: column; justify-content: center; gap: 5px; width: 36px; height: 36px; border: 0; padding: 7px 5px; color: #ff8800; background: transparent; cursor: pointer; }

@@ -46,3 +46,23 @@ normalizes API arrays into join tables:
 The registration route accepts a password, but a database integration must hash
 it into `registrations.password_hash` and must never persist or return the raw
 password.
+
+### Prisma setup
+
+Copy `.env.example` to `.env`, then run:
+
+```bash
+npm install
+npx prisma migrate dev
+npx prisma generate
+```
+
+The SQLite database is created as `dev.db` in the project root.
+
+Authentication endpoints:
+
+- `POST /api/auth/register` - create a user with an email and bcrypt-hashed password; duplicate emails return `409`
+- `POST /api/auth/login` - authenticate a user and set a 24-hour HttpOnly JWT cookie; invalid credentials return `401`
+- `GET /api/auth/me` - check the current authenticated session
+
+The server requires `JWT_SECRET` in `.env` to issue and verify authentication cookies.
