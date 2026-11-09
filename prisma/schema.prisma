@@ -10,6 +10,7 @@ model Registration {
   id           String @id
   email        String @unique
   passwordHash String @map("password_hash")
+  ownedArtGroups ArtGroup[]
 
   @@map("registrations")
 }
@@ -97,12 +98,15 @@ model CommissionApplicant {
 }
 
 model ArtGroup {
-  id         String             @id
-  artStyle   String             @unique @map("art_style")
+  id         String              @id
+  ownerId    String?             @map("owner_id")
+  artStyle   String              @unique @map("art_style")
   visibility String
+  owner      Registration?       @relation(fields: [ownerId], references: [id], onDelete: SetNull)
   interests  ArtGroupInterest[]
   artists    ArtGroupArtist[]
 
+  @@index([ownerId])
   @@map("art_groups")
 }
 

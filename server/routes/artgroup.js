@@ -5,9 +5,6 @@ import prisma from "../prisma.js";
 
 const router = express.Router();
 let artGroups = [];
-const userIsArtist = (request, artistIds) =>
-  Array.isArray(artistIds) && artistIds.includes(request.user.userId);
-
 const getArtGroup = (id) => artGroups.find((artGroup) => artGroup.id === id);
 const normalizeArtStyle = (artStyle) => artStyle.trim().toLowerCase();
 const validStringList = (values) =>
@@ -41,6 +38,7 @@ router.get("/artgroup", async (request, response) => {
       where: {
         OR: [
           { visibility: "public" },
+          { ownerId: request.user.userId },
           { artists: { some: { artistId: request.user.userId } } },
         ],
       },
@@ -59,6 +57,7 @@ router.get("/artgroup/:id", async (request, response) => {
         id: request.params.id,
         OR: [
           { visibility: "public" },
+          { ownerId: request.user.userId },
           { artists: { some: { artistId: request.user.userId } } },
         ],
       },
@@ -96,15 +95,11 @@ router.post("/artgroup", async (request, response) => {
     });
     return;
   }
-  if (!userIsArtist(request, artistIds)) {
-    response.status(403).json({ message: "You must be a member of the art group." });
-    return;
-  }
-
   try {
     const artGroup = await prisma.artGroup.create({
       data: {
         id: randomUUID(),
+        ownerId: request.user.userId,
         artStyle: artStyle.trim(),
         visibility,
         interests: {
@@ -147,16 +142,11 @@ router.put("/artgroup/:id", async (request, response) => {
     });
     return;
   }
-  if (!userIsArtist(request, artistIds)) {
-    response.status(403).json({ message: "You must be a member of the art group." });
-    return;
-  }
-
   try {
     const existingArtGroup = await prisma.artGroup.findFirst({
       where: {
         id: request.params.id,
-        artists: { some: { artistId: request.user.userId } },
+        ownerId: request.user.userId,
       },
     });
 
@@ -216,7 +206,7 @@ router.delete("/artgroup/:id", async (request, response) => {
     const artGroup = await prisma.artGroup.findFirst({
       where: {
         id: request.params.id,
-        artists: { some: { artistId: request.user.userId } },
+        ownerId: request.user.userId,
       },
     });
 

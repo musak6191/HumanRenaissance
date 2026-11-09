@@ -185,20 +185,10 @@ router.put("/chat/:id", async (request, response) => {
     });
     return;
   }
-  if (!isParticipant(request, artistId, commissionerId)) {
-    response.status(403).json({ message: "You must participate in the chat." });
-    return;
-  }
-
   try {
-    const [existingChat, artist, commissioner] = await Promise.all([
-      prisma.chat.findUnique({ where: { id: request.params.id } }),
-      prisma.artist.findUnique({ where: { id: artistId }, select: { id: true } }),
-      prisma.commissioner.findUnique({
-        where: { id: commissionerId },
-        select: { id: true },
-      }),
-    ]);
+    const existingChat = await prisma.chat.findUnique({
+      where: { id: request.params.id },
+    });
 
     if (!existingChat) {
       response.status(404).json({ message: "Chat not found." });
@@ -209,23 +199,17 @@ router.put("/chat/:id", async (request, response) => {
       return;
     }
 
-    if (!artist || !commissioner) {
-      response.status(400).json({
-        message: "A valid artistId and commissionerId are required.",
+    if (
+      artistId !== existingChat.artistId ||
+      commissionerId !== existingChat.commissionerId
+    ) {
+      response.status(403).json({
+        message: "Chat participants cannot be changed.",
       });
       return;
     }
 
-    const chat = await prisma.chat.update({
-      where: { id: request.params.id },
-      data: {
-        artist: { connect: { id: artistId } },
-        commissioner: { connect: { id: commissionerId } },
-      },
-      include: { messages: true },
-    });
-
-    response.json(chat);
+    response.json(existingChat);
   } catch (error) {
     console.error("Failed to update the chat in the database.", error);
     response.status(500).json({ message: "Failed to update chat." });
