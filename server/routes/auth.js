@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "node:crypto";
+import authenticate from "../middleware/authenticate.js";
 import prisma from "../prisma.js";
 
 const router = express.Router();
@@ -92,29 +93,10 @@ router.post("/auth/login", async (request, response) => {
   }
 });
 
-router.get("/auth/me", (request, response) => {
-  const jwtSecret = getJwtSecret(response);
-  if (!jwtSecret) {
-    return;
-  }
-
-  const token = (request.headers.cookie || "")
-    .split(";")
-    .map((cookie) => cookie.trim())
-    .find((cookie) => cookie.startsWith("auth_token="))
-    ?.slice("auth_token=".length);
-
-  if (!token) {
-    response.status(401).json({ message: invalidCredentialsMessage });
-    return;
-  }
-
-  try {
-    const payload = jwt.verify(decodeURIComponent(token), jwtSecret);
-    response.json({ user: { id: payload.userId, email: payload.email } });
-  } catch {
-    response.status(401).json({ message: invalidCredentialsMessage });
-  }
+router.get("/auth/me", authenticate, (request, response) => {
+  response.json({
+    user: { id: request.user.userId, email: request.user.email },
+  });
 });
 
 export default router;

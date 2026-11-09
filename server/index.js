@@ -7,6 +7,7 @@ import artGroupRouter from "./routes/artgroup.js";
 import chatRouter from "./routes/chat.js";
 import commissionRouter from "./routes/commission.js";
 import commissionerRouter from "./routes/commissioner.js";
+import authenticate from "./middleware/authenticate.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/api", authRouter);
+app.use("/api", authenticate);
 app.use("/api", commissionRouter);
 app.use("/api", commissionerRouter);
 app.use("/api", artistRouter);
