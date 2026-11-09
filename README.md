@@ -11,6 +11,8 @@ There is another Readme called README_AI.md. It´s for the distinction between m
 Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
 Backend: Express (Port 3000)
 
+Security: bcrypt for password hash, Session-JWT with HttpOnly
+
 Database: SQLite via Prisma ORM
 
 Ressources: Artist, Commissioner, Commission, Artgroups, Artboard, Chats, Calls
