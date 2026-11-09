@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+import { apiBaseUrl, authFetch } from "../../lib/authFetch";
 
 async function fetchJson(path) {
-  const response = await fetch(`${apiBaseUrl}${path}`);
+  const response = await authFetch(`${apiBaseUrl}${path}`);
   const result = await response.json();
 
   if (!response.ok) {
@@ -115,7 +114,7 @@ export default function ViewCommission({ commissionId, isActive, onBack, navigat
     setError("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/commission/${commission.id}`, {
+      const response = await authFetch(`${apiBaseUrl}/api/commission/${commission.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -160,7 +159,7 @@ export default function ViewCommission({ commissionId, isActive, onBack, navigat
     setError("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/commission/${commission.id}`, {
+      const response = await authFetch(`${apiBaseUrl}/api/commission/${commission.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -5,6 +5,8 @@ import prisma from "../prisma.js";
 
 const router = express.Router();
 let artGroups = [];
+const userIsArtist = (request, artistIds) =>
+  Array.isArray(artistIds) && artistIds.includes(request.user.userId);
 
 const getArtGroup = (id) => artGroups.find((artGroup) => artGroup.id === id);
 const normalizeArtStyle = (artStyle) => artStyle.trim().toLowerCase();
@@ -33,9 +35,16 @@ const validArtGroupData = ({ artStyle, interests, artistIds, visibility }) =>
   validArtistIds(artistIds) &&
   validVisibility(visibility);
 
-router.get("/artgroup", async (_request, response) => {
+router.get("/artgroup", async (request, response) => {
   try {
-    const artGroupsFromDatabase = await prisma.artGroup.findMany();
+    const artGroupsFromDatabase = await prisma.artGroup.findMany({
+      where: {
+        OR: [
+          { visibility: "public" },
+          { artists: { some: { artistId: request.user.userId } } },
+        ],
+      },
+    });
     response.json(artGroupsFromDatabase);
   } catch (error) {
     console.error("Failed to load art groups from the database.", error);
@@ -45,8 +54,14 @@ router.get("/artgroup", async (_request, response) => {
 
 router.get("/artgroup/:id", async (request, response) => {
   try {
-    const artGroup = await prisma.artGroup.findUnique({
-      where: { id: request.params.id },
+    const artGroup = await prisma.artGroup.findFirst({
+      where: {
+        id: request.params.id,
+        OR: [
+          { visibility: "public" },
+          { artists: { some: { artistId: request.user.userId } } },
+        ],
+      },
     });
 
     if (!artGroup) {
@@ -79,6 +94,10 @@ router.post("/artgroup", async (request, response) => {
       message:
         "Provide valid interests, artistIds, and visibility. Interests may contain at most 3 items.",
     });
+    return;
+  }
+  if (!userIsArtist(request, artistIds)) {
+    response.status(403).json({ message: "You must be a member of the art group." });
     return;
   }
 
@@ -128,10 +147,17 @@ router.put("/artgroup/:id", async (request, response) => {
     });
     return;
   }
+  if (!userIsArtist(request, artistIds)) {
+    response.status(403).json({ message: "You must be a member of the art group." });
+    return;
+  }
 
   try {
-    const existingArtGroup = await prisma.artGroup.findUnique({
-      where: { id: request.params.id },
+    const existingArtGroup = await prisma.artGroup.findFirst({
+      where: {
+        id: request.params.id,
+        artists: { some: { artistId: request.user.userId } },
+      },
     });
 
     if (!existingArtGroup) {
@@ -187,8 +213,11 @@ router.put("/artgroup/:id", async (request, response) => {
 
 router.delete("/artgroup/:id", async (request, response) => {
   try {
-    const artGroup = await prisma.artGroup.findUnique({
-      where: { id: request.params.id },
+    const artGroup = await prisma.artGroup.findFirst({
+      where: {
+        id: request.params.id,
+        artists: { some: { artistId: request.user.userId } },
+      },
     });
 
     if (!artGroup) {

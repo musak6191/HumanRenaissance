@@ -4,6 +4,8 @@ import prisma from "../prisma.js";
 
 const router = express.Router();
 let chats = [];
+const isParticipant = (request, artistId, commissionerId) =>
+  request.user.userId === artistId || request.user.userId === commissionerId;
 
 const getChat = (id) => chats.find((chat) => chat.id === id);
 const hasParticipants = (artistId, commissionerId) =>
@@ -18,9 +20,15 @@ const hasMessageContent = ({ type, content, picture, speechMemo }) => {
   return typeof speechMemo === "string" && Boolean(speechMemo.trim());
 };
 
-router.get("/chat", async (_request, response) => {
+router.get("/chat", async (request, response) => {
   try {
     const chatsFromDatabase = await prisma.chat.findMany({
+      where: {
+        OR: [
+          { artistId: request.user.userId },
+          { commissionerId: request.user.userId },
+        ],
+      },
       include: { messages: true },
     });
     response.json(chatsFromDatabase);
@@ -32,8 +40,14 @@ router.get("/chat", async (_request, response) => {
 
 router.get("/chat/:id", async (request, response) => {
   try {
-    const chat = await prisma.chat.findUnique({
-      where: { id: request.params.id },
+    const chat = await prisma.chat.findFirst({
+      where: {
+        id: request.params.id,
+        OR: [
+          { artistId: request.user.userId },
+          { commissionerId: request.user.userId },
+        ],
+      },
       include: { messages: true },
     });
 
@@ -56,6 +70,10 @@ router.post("/chat", async (request, response) => {
     response.status(400).json({
       message: "A valid artistId and commissionerId are required.",
     });
+    return;
+  }
+  if (!isParticipant(request, artistId, commissionerId)) {
+    response.status(403).json({ message: "You must participate in the chat." });
     return;
   }
 
@@ -103,6 +121,14 @@ router.post("/chat/:id/message", async (request, response) => {
 
     if (!chat) {
       response.status(404).json({ message: "Chat not found." });
+      return;
+    }
+    if (!isParticipant(request, chat.artistId, chat.commissionerId)) {
+      response.status(403).json({ message: "You cannot access this chat." });
+      return;
+    }
+    if (senderId !== request.user.userId) {
+      response.status(403).json({ message: "Messages must be sent by the authenticated user." });
       return;
     }
 
@@ -159,6 +185,10 @@ router.put("/chat/:id", async (request, response) => {
     });
     return;
   }
+  if (!isParticipant(request, artistId, commissionerId)) {
+    response.status(403).json({ message: "You must participate in the chat." });
+    return;
+  }
 
   try {
     const [existingChat, artist, commissioner] = await Promise.all([
@@ -172,6 +202,10 @@ router.put("/chat/:id", async (request, response) => {
 
     if (!existingChat) {
       response.status(404).json({ message: "Chat not found." });
+      return;
+    }
+    if (!isParticipant(request, existingChat.artistId, existingChat.commissionerId)) {
+      response.status(403).json({ message: "You cannot update this chat." });
       return;
     }
 
@@ -206,6 +240,10 @@ router.delete("/chat/:id", async (request, response) => {
 
     if (!chat) {
       response.status(404).json({ message: "Chat not found." });
+      return;
+    }
+    if (!isParticipant(request, chat.artistId, chat.commissionerId)) {
+      response.status(403).json({ message: "You cannot delete this chat." });
       return;
     }
 

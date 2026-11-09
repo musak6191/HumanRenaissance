@@ -1,8 +1,8 @@
 import express from "express";
-import { randomUUID } from "node:crypto";
 import prisma from "../prisma.js";
 
 const router = express.Router();
+const isCurrentUser = (request, id) => request.user.userId === id;
 let artists = [
   {
     id: "sample-artist-1",
@@ -32,6 +32,10 @@ router.get("/artist", async (_request, response) => {
 });
 
 router.get("/artist/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot access this profile." });
+    return;
+  }
   try {
     const artist = await prisma.artist.findUnique({
       where: { id: request.params.id },
@@ -70,7 +74,7 @@ router.post("/artist", async (request, response) => {
   try {
     const artist = await prisma.artist.create({
       data: {
-        id: randomUUID(),
+        id: request.user.userId,
         surname,
         name,
         biography,
@@ -97,6 +101,10 @@ router.post("/artist", async (request, response) => {
 });
 
 router.put("/artist/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot update this profile." });
+    return;
+  }
   const {
     email: _email,
     passwordHash: _passwordHash,
@@ -158,6 +166,10 @@ router.put("/artist/:id", async (request, response) => {
 });
 
 router.delete("/artist/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot delete this profile." });
+    return;
+  }
   try {
     const artist = await prisma.artist.findUnique({
       where: { id: request.params.id },

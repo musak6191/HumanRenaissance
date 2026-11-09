@@ -1,8 +1,8 @@
 import express from "express";
-import { randomUUID } from "node:crypto";
 import prisma from "../prisma.js";
 
 const router = express.Router();
+const isCurrentUser = (request, id) => request.user.userId === id;
 export let commissioners = [
   {
     id: "sample-commissioner-1",
@@ -18,9 +18,11 @@ export let commissioners = [
 export const getCommissioner = (id) =>
   commissioners.find((commissioner) => commissioner.id === id);
 
-router.get("/commissioner", async (_request, response) => {
+router.get("/commissioner", async (request, response) => {
   try {
-    const commissionersFromDatabase = await prisma.commissioner.findMany();
+    const commissionersFromDatabase = await prisma.commissioner.findMany({
+      where: { id: request.user.userId },
+    });
     response.json(commissionersFromDatabase);
   } catch (error) {
     console.error("Failed to load commissioners from the database.", error);
@@ -29,6 +31,10 @@ router.get("/commissioner", async (_request, response) => {
 });
 
 router.get("/commissioner/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot access this profile." });
+    return;
+  }
   try {
     const commissioner = await prisma.commissioner.findUnique({
       where: { id: request.params.id },
@@ -61,7 +67,7 @@ router.post("/commissioner", async (request, response) => {
   try {
     const commissioner = await prisma.commissioner.create({
       data: {
-        id: randomUUID(),
+        id: request.user.userId,
         surname,
         name,
         biography,
@@ -79,6 +85,10 @@ router.post("/commissioner", async (request, response) => {
 });
 
 router.put("/commissioner/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot update this profile." });
+    return;
+  }
   const {
     email: _email,
     passwordHash: _passwordHash,
@@ -120,6 +130,10 @@ router.put("/commissioner/:id", async (request, response) => {
 });
 
 router.delete("/commissioner/:id", async (request, response) => {
+  if (!isCurrentUser(request, request.params.id)) {
+    response.status(403).json({ message: "You cannot delete this profile." });
+    return;
+  }
   try {
     const commissioner = await prisma.commissioner.findUnique({
       where: { id: request.params.id },

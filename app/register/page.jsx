@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+import { apiBaseUrl, authFetch } from "../lib/authFetch";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,10 +17,11 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/auth/register`, {
+      const response = await authFetch(`${apiBaseUrl}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
+        redirectOnUnauthorized: false,
         body: JSON.stringify(form),
       });
       const result = await response.json();

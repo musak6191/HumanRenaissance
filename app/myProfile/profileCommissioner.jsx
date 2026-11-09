@@ -1,11 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiBaseUrl, authFetch } from "../lib/authFetch";
 
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-const commissionerId = "sample-commissioner-1";
-
-export default function ProfileCommissioner({ onBack, navigation }) {
+export default function ProfileCommissioner({ commissionerId, onBack, navigation }) {
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -15,7 +13,7 @@ export default function ProfileCommissioner({ onBack, navigation }) {
   useEffect(() => {
     let active = true;
 
-    fetch(`${apiBaseUrl}/api/commissioner/${commissionerId}`)
+    authFetch(`${apiBaseUrl}/api/commissioner/${commissionerId}`)
       .then(async (response) => {
         const result = await response.json();
         if (!response.ok) {
@@ -62,7 +60,7 @@ export default function ProfileCommissioner({ onBack, navigation }) {
     setError("");
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/commissioner/${commissionerId}`, {
+      const response = await authFetch(`${apiBaseUrl}/api/commissioner/${commissionerId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(profile),

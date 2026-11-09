@@ -7,14 +7,13 @@ import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
 import ProfileCommissioner from "./myProfile/profileCommissioner";
 import CommissionerNavigation from "./navigation";
+import { apiBaseUrl, authFetch } from "./lib/authFetch";
 
 const initialForm = {
   prompt: "",
   gage: "",
   fusion: false,
 };
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
 export default function HomePage() {
   const router = useRouter();
   const [form, setForm] = useState(initialForm);
@@ -25,14 +24,17 @@ export default function HomePage() {
   const [selectedCommissionId, setSelectedCommissionId] = useState(null);
   const [selectedCommissionIsActive, setSelectedCommissionIsActive] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/auth/me`, { credentials: "include" })
-      .then((response) => {
+    authFetch(`${apiBaseUrl}/api/auth/me`)
+      .then(async (response) => {
         if (!response.ok) {
           router.replace("/login");
           return;
         }
+        const result = await response.json();
+        setUser(result.user);
         setAuthChecked(true);
       })
       .catch(() => router.replace("/login"));
@@ -59,7 +61,7 @@ export default function HomePage() {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${apiBaseUrl}/api/commission`, {
+      const response = await authFetch(`${apiBaseUrl}/api/commission`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +69,7 @@ export default function HomePage() {
         body: JSON.stringify({
           prompt: form.prompt,
           budget: Number(form.gage),
-          commissionerId: "sample-commissioner-1",
+          commissionerId: user.id,
           artistIds: [],
           started: false,
           fusionCommission: form.fusion,
@@ -137,6 +139,7 @@ export default function HomePage() {
   if (screen === "profile") {
     return (
       <ProfileCommissioner
+        commissionerId={user.id}
         onBack={() => setScreen("commissions")}
         navigation={navigation}
       />

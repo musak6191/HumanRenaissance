@@ -22,6 +22,10 @@ function serializeCookie(token) {
   return `auth_token=${encodeURIComponent(token)}; Max-Age=86400; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
 }
 
+function clearAuthenticationCookie() {
+  return "auth_token=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax";
+}
+
 router.post("/auth/register", async (request, response) => {
   const { email, password } = request.body;
 
@@ -36,13 +40,21 @@ router.post("/auth/register", async (request, response) => {
   }
 
   try {
-    const user = await prisma.registration.create({
-      data: {
-        id: randomUUID(),
-        email: normalizeEmail(email),
-        passwordHash: await bcrypt.hash(password, 12),
-      },
-      select: { id: true, email: true },
+    const user = await prisma.$transaction(async (transaction) => {
+      const registration = await transaction.registration.create({
+        data: {
+          id: randomUUID(),
+          email: normalizeEmail(email),
+          passwordHash: await bcrypt.hash(password, 12),
+        },
+        select: { id: true, email: true },
+      });
+
+      await transaction.commissioner.create({
+        data: { id: registration.id },
+      });
+
+      return registration;
     });
 
     response.status(201).json({ user });
@@ -91,6 +103,11 @@ router.post("/auth/login", async (request, response) => {
     console.error("Failed to log in the user.", error);
     response.status(500).json({ message: "Failed to log in." });
   }
+});
+
+router.post("/auth/logout", (_request, response) => {
+  response.setHeader("Set-Cookie", clearAuthenticationCookie());
+  response.status(204).send();
 });
 
 router.get("/auth/me", authenticate, (request, response) => {

@@ -11,7 +11,7 @@ There is another Readme called README_AI.md. It´s for the distinction between m
 Frontend: Next.js with App Router (Port 5173), React Server Components and Tailwind CSS
 Backend: Express (Port 3000)
 
-Security: bcrypt for password hash, Session-JWT with HttpOnly
+Security: bcrypt for password hash, Session-JWT with HttpOnly cookies. Resource queries are scoped to the authenticated `req.user.userId`, and the frontend uses `authFetch` for credentialed requests.
 
 Database: SQLite via Prisma ORM
 
@@ -115,4 +115,4 @@ Added Post Handlers for /auth/register & /login, password hashes (bcrypt), JWT p
 First worked on an DIY implementetion of authN & authZ but for exploring purposes I switched up to Clerk authentification. If there is time, I will maybe switch back to a DIY solution.
 
 09_11_2026: I am reverting back to a DIY solution, because clerk made many problems and didn´t gave me the agency for the UX I am aiming for. Still good to know that there is an easy-to-implement & fast-to-market approach to auth.
-Implemented a middleware.
+Implemented a middleware and replaced fetch() with authFetch()

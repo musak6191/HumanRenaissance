@@ -68,3 +68,5 @@ Authentication endpoints:
 The server requires `JWT_SECRET` in `.env` to issue and verify authentication cookies.
 
 Authentication uses the local Express API with SQLite user records. Registration and login issue an HttpOnly JWT cookie, and the `/api/auth/me` endpoint checks the current session. All resource routes require a valid JWT in the `auth_token` cookie or an `Authorization: Bearer <token>` header; the verified payload is available as `req.user`.
+
+The frontend uses `app/lib/authFetch.js` for credentialed API requests. A `401` clears the authentication cookie through `/api/auth/logout` and redirects to `/login`.

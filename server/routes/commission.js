@@ -114,9 +114,17 @@ const hasValidCommissionUpdateDetails = ({
     (artistIds.length >= 1 &&
       (fusionCommission ? artistIds.length >= 2 : artistIds.length === 1)));
 
-router.get(["/commission", "/commissions"], async (_request, response) => {
+router.get(["/commission", "/commissions"], async (request, response) => {
   try {
-    const commissionsFromDatabase = await prisma.commission.findMany();
+    const commissionsFromDatabase = await prisma.commission.findMany({
+      where: {
+        OR: [
+          { commissionerId: request.user.userId },
+          { artists: { some: { artistId: request.user.userId } } },
+          { applicants: { some: { artistId: request.user.userId } } },
+        ],
+      },
+    });
     response.json(commissionsFromDatabase);
   } catch (error) {
     console.error("Failed to load commissions from the database.", error);
@@ -126,8 +134,15 @@ router.get(["/commission", "/commissions"], async (_request, response) => {
 
 router.get("/commission/:id", async (request, response) => {
   try {
-    const commission = await prisma.commission.findUnique({
-      where: { id: request.params.id },
+    const commission = await prisma.commission.findFirst({
+      where: {
+        id: request.params.id,
+        OR: [
+          { commissionerId: request.user.userId },
+          { artists: { some: { artistId: request.user.userId } } },
+          { applicants: { some: { artistId: request.user.userId } } },
+        ],
+      },
     });
 
     if (!commission) {
@@ -171,6 +186,11 @@ router.post(["/commission", "/commissions"], async (request, response) => {
     response.status(400).json({
       message: "A valid commissionerId, artistIds, started, and fusionCommission are required.",
     });
+    return;
+  }
+
+  if (commissionerId !== request.user.userId) {
+    response.status(403).json({ message: "You cannot create a commission for another user." });
     return;
   }
 
@@ -246,9 +266,19 @@ router.put("/commission/:id", async (request, response) => {
     startedAt,
   } = request.body;
 
+  if (commissionerId !== request.user.userId) {
+    response.status(403).json({ message: "You cannot update a commission for another user." });
+    return;
+  }
+
   try {
     const [existingCommission, commissioner, artists] = await Promise.all([
-      prisma.commission.findUnique({ where: { id: request.params.id } }),
+      prisma.commission.findFirst({
+        where: {
+          id: request.params.id,
+          commissionerId: request.user.userId,
+        },
+      }),
       prisma.commissioner.findUnique({ where: { id: commissionerId } }),
       prisma.artist.findMany({
         where: { id: { in: artistIds } },
@@ -300,17 +330,24 @@ router.put("/commission/:id", async (request, response) => {
 });
 
 router.delete("/commission/:id", (request, response) => {
-  const commissionIndex = commissions.findIndex(
-    (commission) => commission.id === request.params.id,
-  );
-
-  if (commissionIndex === -1) {
-    response.status(404).json({ message: "Commission not found." });
-    return;
-  }
-
-  commissions.splice(commissionIndex, 1);
-  response.status(204).send();
+  prisma.commission
+    .deleteMany({
+      where: {
+        id: request.params.id,
+        commissionerId: request.user.userId,
+      },
+    })
+    .then((result) => {
+      if (result.count === 0) {
+        response.status(404).json({ message: "Commission not found." });
+        return;
+      }
+      response.status(204).send();
+    })
+    .catch((error) => {
+      console.error("Failed to delete the commission from the database.", error);
+      response.status(500).json({ message: "Failed to delete commission." });
+    });
 });
 
 export default router;

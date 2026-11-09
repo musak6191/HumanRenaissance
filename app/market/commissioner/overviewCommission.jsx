@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+import { apiBaseUrl, authFetch } from "../../lib/authFetch";
 
 function CommissionList({ commissions, emptyMessage, onSelect }) {
   if (commissions.length === 0) {
@@ -36,7 +35,7 @@ export default function OverviewCommission({ onCreate, onSelectCommission, navig
 
     async function loadCommissions() {
       try {
-        const response = await fetch(`${apiBaseUrl}/api/commission`);
+        const response = await authFetch(`${apiBaseUrl}/api/commission`);
         const result = await response.json();
 
         if (!response.ok) {
