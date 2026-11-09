@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
@@ -15,6 +16,7 @@ const initialForm = {
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function HomePage() {
+  const router = useRouter();
   const [form, setForm] = useState(initialForm);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -22,6 +24,24 @@ export default function HomePage() {
   const [screen, setScreen] = useState("prompt");
   const [selectedCommissionId, setSelectedCommissionId] = useState(null);
   const [selectedCommissionIsActive, setSelectedCommissionIsActive] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
+
+  useEffect(() => {
+    fetch(`${apiBaseUrl}/api/auth/me`, { credentials: "include" })
+      .then((response) => {
+        if (!response.ok) {
+          router.replace("/login");
+          return;
+        }
+        setAuthChecked(true);
+      })
+      .catch(() => router.replace("/login"));
+  }, [router]);
+
+  if (!authChecked) {
+    return null;
+  }
+
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));

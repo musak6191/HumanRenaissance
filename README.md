@@ -108,5 +108,8 @@ Data persistancy is now secured with SQLite and Prisma ORM. This is of course no
 
 ## Working on AuthN & AuthZ 07_11_2026
 
-First worked on an DIY implementetion of authN & authZ but for exploring purposes I switched up to Clerk authentification.
-If there is time, I will maybe switch back to a DIY solution.
+Added Post Handlers for /auth/register & /login, password hashes (bcrypt), JWT payloads for authZ and the agent implemented cors for this. I expect a few bugs.
+
+First worked on an DIY implementetion of authN & authZ but for exploring purposes I switched up to Clerk authentification. If there is time, I will maybe switch back to a DIY solution.
+
+09_11_2026: I am reverting back to a DIY solution, because clerk made many problems and didn´t gave me the agency for the UX I am aiming for. Still good to know that there is an easy-to-implement & fast-to-market approach to auth.
