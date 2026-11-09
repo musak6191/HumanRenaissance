@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import { authConfig } from "../authConfig.js";
 
 const authenticationFailureMessage = "Authentication required.";
 
@@ -19,11 +20,6 @@ const getToken = (request) => {
 };
 
 export default function authenticate(request, response, next) {
-  if (!process.env.JWT_SECRET) {
-    response.status(500).json({ message: "Authentication is not configured." });
-    return;
-  }
-
   const token = getToken(request);
   if (!token) {
     response.status(401).json({ message: authenticationFailureMessage });
@@ -31,7 +27,11 @@ export default function authenticate(request, response, next) {
   }
 
   try {
-    request.user = jwt.verify(decodeURIComponent(token), process.env.JWT_SECRET);
+    request.user = jwt.verify(decodeURIComponent(token), authConfig.secret, {
+      algorithms: [authConfig.algorithm],
+      issuer: authConfig.issuer,
+      audience: authConfig.audience,
+    });
     next();
   } catch {
     response.status(401).json({ message: authenticationFailureMessage });

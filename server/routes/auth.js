@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { randomUUID } from "node:crypto";
+import { authConfig } from "../authConfig.js";
 import authenticate from "../middleware/authenticate.js";
 import prisma from "../prisma.js";
 
@@ -9,17 +10,8 @@ const router = express.Router();
 const invalidCredentialsMessage = "Invalid email or password.";
 const normalizeEmail = (email) => email.trim().toLowerCase();
 
-function getJwtSecret(response) {
-  if (!process.env.JWT_SECRET) {
-    response.status(500).json({ message: "Authentication is not configured." });
-    return null;
-  }
-
-  return process.env.JWT_SECRET;
-}
-
 function serializeCookie(token) {
-  return `auth_token=${encodeURIComponent(token)}; Max-Age=86400; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
+  return `auth_token=${encodeURIComponent(token)}; Max-Age=900; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
 }
 
 function clearAuthenticationCookie() {
@@ -77,11 +69,6 @@ router.post("/auth/login", async (request, response) => {
     return;
   }
 
-  const jwtSecret = getJwtSecret(response);
-  if (!jwtSecret) {
-    return;
-  }
-
   try {
     const user = await prisma.registration.findUnique({
       where: { email: normalizeEmail(email) },
@@ -94,8 +81,13 @@ router.post("/auth/login", async (request, response) => {
 
     const token = jwt.sign(
       { userId: user.id, email: user.email },
-      jwtSecret,
-      { expiresIn: "24h" },
+      authConfig.secret,
+      {
+        algorithm: authConfig.algorithm,
+        audience: authConfig.audience,
+        expiresIn: authConfig.expiresIn,
+        issuer: authConfig.issuer,
+      },
     );
     response.setHeader("Set-Cookie", serializeCookie(token));
     response.json({ user: { id: user.id, email: user.email } });

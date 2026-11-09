@@ -65,7 +65,7 @@ Authentication endpoints:
 - `POST /api/auth/login` - authenticate a user and set a 24-hour HttpOnly JWT cookie; invalid credentials return `401`
 - `GET /api/auth/me` - check the current authenticated session
 
-The server requires `JWT_SECRET` in `.env` to issue and verify authentication cookies.
+The server requires a `JWT_SECRET` of at least 32 characters in `.env` to issue and verify authentication cookies. JWTs expire after 15 minutes, use the configured `JWT_ISSUER` and `JWT_AUDIENCE` values (with secure defaults), and are restricted to the HS256 algorithm.
 
 Authentication uses the local Express API with SQLite user records. Registration and login issue an HttpOnly JWT cookie, and the `/api/auth/me` endpoint checks the current session. All resource routes require a valid JWT in the `auth_token` cookie or an `Authorization: Bearer <token>` header; the verified payload is available as `req.user`.
 

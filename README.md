@@ -116,4 +116,4 @@ First worked on an DIY implementetion of authN & authZ but for exploring purpose
 
 09_11_2026: I am reverting back to a DIY solution, because clerk made many problems and didn´t gave me the agency for the UX I am aiming for. Still good to know that there is an easy-to-implement & fast-to-market approach to auth.
 Implemented a middleware and replaced fetch() with authFetch()
-For security issues: Added a owner concept to art groups. Fixed chat reassignment vulnerability.
+For security issues: Added a owner concept to art groups. Fixed chat reassignment vulnerability. Implemented a centralized JWT config with stronger rules to it and it now checks JWT at server startup too.

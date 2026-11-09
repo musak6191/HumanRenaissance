@@ -1,6 +1,7 @@
 import "dotenv/config";
 import cors from "cors";
 import express from "express";
+import "./authConfig.js";
 import authRouter from "./routes/auth.js";
 import artistRouter from "./routes/artist.js";
 import artGroupRouter from "./routes/artgroup.js";
