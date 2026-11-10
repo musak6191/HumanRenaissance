@@ -3,8 +3,10 @@ import { randomUUID } from "node:crypto";
 import { getArtist } from "./artist.js";
 import { getCommissioner } from "./commissioner.js";
 import prisma from "../prisma.js";
+import { requireAccountType } from "../middleware/accountType.js";
 
 const router = express.Router();
+const commissionerOnly = requireAccountType("commissioner");
 
 let commissions = [
   {
@@ -157,7 +159,7 @@ router.get("/commission/:id", async (request, response) => {
   }
 });
 
-router.post(["/commission", "/commissions"], async (request, response) => {
+router.post(["/commission", "/commissions"], commissionerOnly, async (request, response) => {
   const {
     title: _title,
     prompt,
@@ -247,7 +249,7 @@ router.post(["/commission", "/commissions"], async (request, response) => {
   }
 });
 
-router.put("/commission/:id", async (request, response) => {
+router.put("/commission/:id", commissionerOnly, async (request, response) => {
   if (!hasValidCommissionUpdateDetails(request.body)) {
     response.status(400).json({
       message: "A valid prompt, commissionerId, artistIds, started, and fusionCommission are required.",
@@ -329,7 +331,7 @@ router.put("/commission/:id", async (request, response) => {
   }
 });
 
-router.delete("/commission/:id", (request, response) => {
+router.delete("/commission/:id", commissionerOnly, (request, response) => {
   prisma.commission
     .deleteMany({
       where: {

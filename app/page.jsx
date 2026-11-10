@@ -44,6 +44,15 @@ export default function HomePage() {
     return null;
   }
 
+  if (user.accountType === "artist") {
+    return (
+      <main className="auth-page">
+        <h1>Artist account</h1>
+        <p>Your artist profile is connected to this account.</p>
+      </main>
+    );
+  }
+
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));

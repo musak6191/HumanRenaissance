@@ -19,15 +19,18 @@ function clearAuthenticationCookie() {
 }
 
 router.post("/auth/register", async (request, response) => {
-  const { email, password } = request.body;
+  const { email, password, accountType } = request.body;
 
   if (
     typeof email !== "string" ||
     !email.trim() ||
     typeof password !== "string" ||
-    !password
+    !password ||
+    !["artist", "commissioner"].includes(accountType)
   ) {
-    response.status(400).json({ message: "An email and password are required." });
+    response.status(400).json({
+      message: "An email, password, and valid account type are required.",
+    });
     return;
   }
 
@@ -38,13 +41,16 @@ router.post("/auth/register", async (request, response) => {
           id: randomUUID(),
           email: normalizeEmail(email),
           passwordHash: await bcrypt.hash(password, 12),
+          accountType,
         },
-        select: { id: true, email: true },
+        select: { id: true, email: true, accountType: true },
       });
 
-      await transaction.commissioner.create({
-        data: { id: registration.id },
-      });
+      if (accountType === "artist") {
+        await transaction.artist.create({ data: { id: registration.id } });
+      } else {
+        await transaction.commissioner.create({ data: { id: registration.id } });
+      }
 
       return registration;
     });
@@ -80,7 +86,11 @@ router.post("/auth/login", async (request, response) => {
     }
 
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      {
+        userId: user.id,
+        email: user.email,
+        accountType: user.accountType,
+      },
       authConfig.secret,
       {
         algorithm: authConfig.algorithm,
@@ -90,7 +100,9 @@ router.post("/auth/login", async (request, response) => {
       },
     );
     response.setHeader("Set-Cookie", serializeCookie(token));
-    response.json({ user: { id: user.id, email: user.email } });
+    response.json({
+      user: { id: user.id, email: user.email, accountType: user.accountType },
+    });
   } catch (error) {
     console.error("Failed to log in the user.", error);
     response.status(500).json({ message: "Failed to log in." });
@@ -104,7 +116,11 @@ router.post("/auth/logout", (_request, response) => {
 
 router.get("/auth/me", authenticate, (request, response) => {
   response.json({
-    user: { id: request.user.userId, email: request.user.email },
+    user: {
+      id: request.user.userId,
+      email: request.user.email,
+      accountType: request.user.accountType,
+    },
   });
 });
 

@@ -1,8 +1,10 @@
 import express from "express";
 import prisma from "../prisma.js";
+import { requireAccountType } from "../middleware/accountType.js";
 
 const router = express.Router();
 const isCurrentUser = (request, id) => request.user.userId === id;
+const commissionerOnly = requireAccountType("commissioner");
 export let commissioners = [
   {
     id: "sample-commissioner-1",
@@ -52,7 +54,7 @@ router.get("/commissioner/:id", async (request, response) => {
   }
 });
 
-router.post("/commissioner", async (request, response) => {
+router.post("/commissioner", commissionerOnly, async (request, response) => {
   const {
     email: _email,
     passwordHash: _passwordHash,
@@ -84,7 +86,7 @@ router.post("/commissioner", async (request, response) => {
   }
 });
 
-router.put("/commissioner/:id", async (request, response) => {
+router.put("/commissioner/:id", commissionerOnly, async (request, response) => {
   if (!isCurrentUser(request, request.params.id)) {
     response.status(403).json({ message: "You cannot update this profile." });
     return;
@@ -129,7 +131,7 @@ router.put("/commissioner/:id", async (request, response) => {
   }
 });
 
-router.delete("/commissioner/:id", async (request, response) => {
+router.delete("/commissioner/:id", commissionerOnly, async (request, response) => {
   if (!isCurrentUser(request, request.params.id)) {
     response.status(403).json({ message: "You cannot delete this profile." });
     return;

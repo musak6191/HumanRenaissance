@@ -7,7 +7,11 @@ import { apiBaseUrl, authFetch } from "../lib/authFetch";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+    accountType: "commissioner",
+  });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -60,6 +64,29 @@ export default function RegisterPage() {
             required
           />
         </label>
+        <fieldset>
+          <legend>Account type</legend>
+          <label>
+            <input
+              type="radio"
+              name="accountType"
+              value="commissioner"
+              checked={form.accountType === "commissioner"}
+              onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+            />
+            Commissioner
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="accountType"
+              value="artist"
+              checked={form.accountType === "artist"}
+              onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+            />
+            Artist
+          </label>
+        </fieldset>
         {error && <p className="auth-error" role="alert">{error}</p>}
         <button type="submit" disabled={submitting}>
           {submitting ? "Registering..." : "Register"}

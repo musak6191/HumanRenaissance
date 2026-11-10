@@ -71,6 +71,8 @@ Authentication uses the local Express API with SQLite user records. Registration
 
 The frontend uses `app/lib/authFetch.js` for credentialed API requests. A `401` clears the authentication cookie through `/api/auth/logout` and redirects to `/login`.
 
+During registration, users choose either an artist or commissioner account. The selected account type is stored with the registration, creates the matching profile record, and is included in the JWT. Artist-only and commissioner-only write routes enforce that account type.
+
 Security Check:
 User: Write an Express middleware called `authenticate` that verifies the JWT and sets `req.user` to the payload. If no token is present or the token is invalid → 401. Integrate the middleware into all relevant routes.
 

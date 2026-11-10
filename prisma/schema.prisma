@@ -10,6 +10,7 @@ model Registration {
   id           String @id
   email        String @unique
   passwordHash String @map("password_hash")
+  accountType  String @default("commissioner") @map("account_type")
   ownedArtGroups ArtGroup[]
 
   @@map("registrations")

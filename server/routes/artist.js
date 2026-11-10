@@ -1,8 +1,10 @@
 import express from "express";
 import prisma from "../prisma.js";
+import { requireAccountType } from "../middleware/accountType.js";
 
 const router = express.Router();
 const isCurrentUser = (request, id) => request.user.userId === id;
+const artistOnly = requireAccountType("artist");
 let artists = [
   {
     id: "sample-artist-1",
@@ -53,7 +55,7 @@ router.get("/artist/:id", async (request, response) => {
   }
 });
 
-router.post("/artist", async (request, response) => {
+router.post("/artist", artistOnly, async (request, response) => {
   const {
     email: _email,
     passwordHash: _passwordHash,
@@ -100,7 +102,7 @@ router.post("/artist", async (request, response) => {
   }
 });
 
-router.put("/artist/:id", async (request, response) => {
+router.put("/artist/:id", artistOnly, async (request, response) => {
   if (!isCurrentUser(request, request.params.id)) {
     response.status(403).json({ message: "You cannot update this profile." });
     return;
@@ -165,7 +167,7 @@ router.put("/artist/:id", async (request, response) => {
   }
 });
 
-router.delete("/artist/:id", async (request, response) => {
+router.delete("/artist/:id", artistOnly, async (request, response) => {
   if (!isCurrentUser(request, request.params.id)) {
     response.status(403).json({ message: "You cannot delete this profile." });
     return;

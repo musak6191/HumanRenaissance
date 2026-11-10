@@ -2,8 +2,10 @@ import express from "express";
 import { randomUUID } from "node:crypto";
 import { getArtist } from "./artist.js";
 import prisma from "../prisma.js";
+import { requireAccountType } from "../middleware/accountType.js";
 
 const router = express.Router();
+const artistOnly = requireAccountType("artist");
 let artGroups = [];
 const getArtGroup = (id) => artGroups.find((artGroup) => artGroup.id === id);
 const normalizeArtStyle = (artStyle) => artStyle.trim().toLowerCase();
@@ -75,7 +77,7 @@ router.get("/artgroup/:id", async (request, response) => {
   }
 });
 
-router.post("/artgroup", async (request, response) => {
+router.post("/artgroup", artistOnly, async (request, response) => {
   const { artStyle, interests, artistIds, visibility } = request.body;
 
   if (typeof artStyle !== "string" || !artStyle.trim()) {
@@ -127,7 +129,7 @@ router.post("/artgroup", async (request, response) => {
   }
 });
 
-router.put("/artgroup/:id", async (request, response) => {
+router.put("/artgroup/:id", artistOnly, async (request, response) => {
   const { artStyle, interests, artistIds, visibility } = request.body;
 
   if (typeof artStyle !== "string" || !artStyle.trim()) {
@@ -201,7 +203,7 @@ router.put("/artgroup/:id", async (request, response) => {
   }
 });
 
-router.delete("/artgroup/:id", async (request, response) => {
+router.delete("/artgroup/:id", artistOnly, async (request, response) => {
   try {
     const artGroup = await prisma.artGroup.findFirst({
       where: {
