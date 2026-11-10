@@ -67,7 +67,7 @@ export default function LoginPage() {
         </h1>
         <div className="mx-auto mt-[57px] flex w-full max-w-[430px] flex-col gap-[28px] font-sans text-base tracking-[-0.02em]">
           <label className="flex items-end">
-            <span className="shrink-0">Email</span>
+            <span className="w-[90px] shrink-0 text-right">Email:</span>
           <input
             id="email"
             name="email"
@@ -75,12 +75,12 @@ export default function LoginPage() {
             aria-label="Email"
             value={form.email}
             onChange={(event) => setForm({ ...form, email: event.target.value })}
-            className="min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 pb-1 outline-none focus:border-[#ff8800] focus:ring-0"
+            className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
             required
           />
           </label>
           <label className="flex items-end">
-            <span className="shrink-0">Password</span>
+            <span className="w-[90px] shrink-0 text-right">Password:</span>
           <input
             id="password"
             name="password"
@@ -88,7 +88,7 @@ export default function LoginPage() {
             aria-label="Password"
             value={form.password}
             onChange={(event) => setForm({ ...form, password: event.target.value })}
-            className="min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 pb-1 outline-none focus:border-[#ff8800] focus:ring-0"
+            className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
             required
           />
           </label>

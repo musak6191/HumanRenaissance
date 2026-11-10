@@ -126,3 +126,5 @@ I linked the login and registration now to artist and commissioner account. So w
 
 So I got my designs in Figma ready to be implemented and here is the list of screens that are implemented:
     - Login screen overhauled
+    - Register screen no.
+        - 1

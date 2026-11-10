@@ -2,97 +2,90 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { apiBaseUrl, authFetch } from "../lib/authFetch";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [form, setForm] = useState({
-    email: "",
-    password: "",
-    accountType: "commissioner",
+    surname: "",
+    familyName: "",
   });
-  const [error, setError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    setError("");
-    setSubmitting(true);
-
-    try {
-      const response = await authFetch(`${apiBaseUrl}/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        redirectOnUnauthorized: false,
-        body: JSON.stringify(form),
-      });
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Unable to register.");
-      }
-
-      router.replace("/login");
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Unable to register.");
-    } finally {
-      setSubmitting(false);
-    }
   }
 
   return (
-    <main className="auth-page">
-      <form className="auth-form" onSubmit={handleSubmit}>
-        <h1>Register</h1>
-        <label>
-          Email
-          <input
-            type="email"
-            value={form.email}
-            onChange={(event) => setForm({ ...form, email: event.target.value })}
-            required
-          />
-        </label>
-        <label>
-          Password
-          <input
-            type="password"
-            value={form.password}
-            onChange={(event) => setForm({ ...form, password: event.target.value })}
-            required
-          />
-        </label>
-        <fieldset>
-          <legend>Account type</legend>
-          <label>
+    <main
+      className="prompt-page px-5 text-[#4a4a4a]"
+      style={{
+        backgroundImage:
+          "radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px)",
+        backgroundPosition: "center, 0 0, 3px 4px",
+        backgroundSize: "100% 100%, 7px 7px, 11px 11px",
+      }}
+    >
+      <header className="prompt-header" aria-label="Human Renaissance">H</header>
+      <form
+        className="mx-auto flex w-full max-w-[500px] flex-col pt-[176px] sm:pt-[178px]"
+        onSubmit={handleSubmit}
+      >
+        <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-none tracking-[-0.05em]">
+          What&apos;s your{" "}
+          <span
+            className="relative z-0 inline-block"
+            style={{
+              backgroundImage:
+                "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+            }}
+          >
+            name?
+          </span>
+        </h1>
+        <div className="mx-auto mt-[57px] flex w-full max-w-[430px] flex-col gap-[28px] font-sans text-base tracking-[-0.02em]">
+          <label className="flex items-end">
+            <span className="w-[90px] shrink-0 text-right">Surname:</span>
             <input
-              type="radio"
-              name="accountType"
-              value="commissioner"
-              checked={form.accountType === "commissioner"}
-              onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+              id="surname"
+              name="surname"
+              type="text"
+              aria-label="Surname"
+              value={form.surname}
+              onChange={(event) => setForm({ ...form, surname: event.target.value })}
+              className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+              required
             />
-            Commissioner
           </label>
-          <label>
+          <label className="flex items-end">
+            <span className="w-[90px] shrink-0 text-right">Family Name:</span>
             <input
-              type="radio"
-              name="accountType"
-              value="artist"
-              checked={form.accountType === "artist"}
-              onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+              id="family-name"
+              name="familyName"
+              type="text"
+              aria-label="Family Name"
+              value={form.familyName}
+              onChange={(event) => setForm({ ...form, familyName: event.target.value })}
+              className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+              required
             />
-            Artist
           </label>
-        </fieldset>
-        {error && <p className="auth-error" role="alert">{error}</p>}
-        <button type="submit" disabled={submitting}>
-          {submitting ? "Registering..." : "Register"}
+        </div>
+        <button
+          type="submit"
+          aria-label="Continue registration"
+          className="mx-auto mt-[124px] flex h-10 w-16 items-center justify-center border-0 bg-transparent p-0 text-[#ff8800] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-[#ff8800] focus-visible:outline-offset-4"
+        >
+          <svg aria-hidden="true" width="64" height="32" viewBox="0 0 64 32" fill="none">
+            <circle cx="8" cy="16" r="8" fill="currentColor" />
+            <path d="M8 16H61M61 16L49 4M61 16L49 28" stroke="currentColor" strokeWidth="3" />
+          </svg>
         </button>
-        <p>
-          Already registered? <Link href="/login">Log in</Link>
+        <p className="mt-[17px] text-center font-serif text-[18px] tracking-[-0.05em]">
+          Already got an account?{" "}
+          <Link
+            href="/login"
+            className="text-[#4a4a4a] underline decoration-[#ff8800] decoration-2 underline-offset-2"
+          >
+            Log in
+          </Link>
         </p>
       </form>
     </main>
