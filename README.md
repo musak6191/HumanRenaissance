@@ -121,3 +121,8 @@ For security issues: Added a owner concept to art groups. Fixed chat reassignmen
 ## Further API Work 10_11_2026
 
 I linked the login and registration now to artist and commissioner account. So when registering now you choose if you are an artist or a commissioner. Before you were always a commissioner.
+
+## Further Work on implementation of more screens and overhaul of old ones 10_11_2026
+
+So I got my designs in Figma ready to be implemented and here is the list of screens that are implemented:
+    - Login screen overhauled
