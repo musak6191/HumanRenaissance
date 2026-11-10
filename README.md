@@ -130,3 +130,4 @@ So I got my designs in Figma ready to be implemented and here is the list of scr
         - 1
         - 2
         - 3
+        - 4 (With that I overhauled the Auth API, where it now stores auth data but creates profile data with a transaction)

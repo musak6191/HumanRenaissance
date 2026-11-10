@@ -19,7 +19,7 @@ model Registration {
 model Artist {
   id                     String                   @id
   surname                String?
-  name                   String?
+  familyName             String?                  @map("family_name")
   biography              String?
   city                   String?
   zipCode                String?                  @map("zip_code")
@@ -47,7 +47,7 @@ model ArtistPortfolioPicture {
 model Commissioner {
   id          String       @id
   surname     String?
-  name        String?
+  familyName   String?       @map("family_name")
   biography   String?
   city        String?
   zipCode     String?      @map("zip_code")

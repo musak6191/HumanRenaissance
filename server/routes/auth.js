@@ -9,6 +9,21 @@ import prisma from "../prisma.js";
 const router = express.Router();
 const invalidCredentialsMessage = "Invalid email or password.";
 const normalizeEmail = (email) => email.trim().toLowerCase();
+const createAuthToken = (user) =>
+  jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      accountType: user.accountType,
+    },
+    authConfig.secret,
+    {
+      algorithm: authConfig.algorithm,
+      audience: authConfig.audience,
+      expiresIn: authConfig.expiresIn,
+      issuer: authConfig.issuer,
+    },
+  );
 
 function serializeCookie(token) {
   return `auth_token=${encodeURIComponent(token)}; Max-Age=900; Path=/; HttpOnly; SameSite=Lax${process.env.NODE_ENV === "production" ? "; Secure" : ""}`;
@@ -19,17 +34,36 @@ function clearAuthenticationCookie() {
 }
 
 router.post("/auth/register", async (request, response) => {
-  const { email, password, accountType } = request.body;
+  const {
+    email,
+    password,
+    accountType,
+    surname,
+    familyName,
+    country,
+    postalCode,
+    city,
+  } = request.body;
 
   if (
     typeof email !== "string" ||
     !email.trim() ||
     typeof password !== "string" ||
     !password ||
+    typeof surname !== "string" ||
+    !surname.trim() ||
+    typeof familyName !== "string" ||
+    !familyName.trim() ||
+    typeof country !== "string" ||
+    !country.trim() ||
+    typeof postalCode !== "string" ||
+    !postalCode.trim() ||
+    typeof city !== "string" ||
+    !city.trim() ||
     !["artist", "commissioner"].includes(accountType)
   ) {
     response.status(400).json({
-      message: "An email, password, and valid account type are required.",
+      message: "Complete registration details and a valid account type are required.",
     });
     return;
   }
@@ -47,14 +81,33 @@ router.post("/auth/register", async (request, response) => {
       });
 
       if (accountType === "artist") {
-        await transaction.artist.create({ data: { id: registration.id } });
+        await transaction.artist.create({
+          data: {
+            id: registration.id,
+            surname,
+            familyName,
+            country,
+            zipCode: postalCode,
+            city,
+          },
+        });
       } else {
-        await transaction.commissioner.create({ data: { id: registration.id } });
+        await transaction.commissioner.create({
+          data: {
+            id: registration.id,
+            surname,
+            familyName,
+            country,
+            zipCode: postalCode,
+            city,
+          },
+        });
       }
 
       return registration;
     });
 
+    response.setHeader("Set-Cookie", serializeCookie(createAuthToken(user)));
     response.status(201).json({ user });
   } catch (error) {
     if (error?.code === "P2002") {
@@ -85,21 +138,7 @@ router.post("/auth/login", async (request, response) => {
       return;
     }
 
-    const token = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        accountType: user.accountType,
-      },
-      authConfig.secret,
-      {
-        algorithm: authConfig.algorithm,
-        audience: authConfig.audience,
-        expiresIn: authConfig.expiresIn,
-        issuer: authConfig.issuer,
-      },
-    );
-    response.setHeader("Set-Cookie", serializeCookie(token));
+    response.setHeader("Set-Cookie", serializeCookie(createAuthToken(user)));
     response.json({
       user: { id: user.id, email: user.email, accountType: user.accountType },
     });

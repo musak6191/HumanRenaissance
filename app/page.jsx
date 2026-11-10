@@ -35,6 +35,12 @@ export default function HomePage() {
         }
         const result = await response.json();
         setUser(result.user);
+        if (
+          result.user.accountType === "commissioner" &&
+          new URLSearchParams(window.location.search).get("screen") === "commissions"
+        ) {
+          setScreen("commissions");
+        }
         setAuthChecked(true);
       })
       .catch(() => router.replace("/login"));

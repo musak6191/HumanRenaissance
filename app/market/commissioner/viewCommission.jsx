@@ -269,7 +269,7 @@ export default function ViewCommission({ commissionId, isActive, onBack, navigat
                     </button>
                   )}
                 </div>
-                <h3>{applicant.name} {applicant.surname}</h3>
+                <h3>{applicant.familyName} {applicant.surname}</h3>
                 <p className="artist-group">{applicantGroup?.artStyle || "No art group"}</p>
                 <p className="artist-biography">{applicant.biography || "No biography provided."}</p>
               </>

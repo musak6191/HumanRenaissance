@@ -98,8 +98,8 @@ export default function ProfileCommissioner({ commissionerId, onBack, navigation
               <input name="surname" value={profile.surname || ""} onChange={updateField} readOnly={!editing} />
             </label>
             <label>
-              <span>Name</span>
-              <input name="name" value={profile.name || ""} onChange={updateField} readOnly={!editing} />
+              <span>Family Name</span>
+              <input name="familyName" value={profile.familyName || ""} onChange={updateField} readOnly={!editing} />
             </label>
             <label className="profile-biography-field">
               <span>Biography</span>

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiBaseUrl, authFetch } from "../lib/authFetch";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     surname: "",
     familyName: "",
@@ -12,13 +15,45 @@ export default function RegisterPage() {
     country: "",
     postalCode: "",
     city: "",
+    accountType: "",
   });
   const [step, setStep] = useState(1);
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     if (step < 3) {
       setStep(step + 1);
+      return;
+    }
+
+    if (step === 3) {
+      setStep(4);
+      return;
+    }
+
+    setError("");
+    setSubmitting(true);
+
+    try {
+      const response = await authFetch(`${apiBaseUrl}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        redirectOnUnauthorized: false,
+        body: JSON.stringify(form),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to register.");
+      }
+
+      router.replace(form.accountType === "commissioner" ? "/?screen=commissions" : "/");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Unable to register.");
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -73,7 +108,7 @@ export default function RegisterPage() {
               password
             </span>
           </h1>
-        ) : (
+        ) : step === 3 ? (
           <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-none tracking-[-0.05em]">
             So{" "}
             <span className="relative z-0 inline-block">
@@ -88,6 +123,30 @@ export default function RegisterPage() {
               }}
             >
               from?
+            </span>
+          </h1>
+        ) : (
+          <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-[1.05] tracking-[-0.05em]">
+            Finally, are you an{" "}
+            <span
+              className="relative z-0 inline-block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+              }}
+            >
+              artist
+            </span>{" "}
+            or a
+            <br />
+            <span
+              className="relative z-0 inline-block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+              }}
+            >
+              commissioner?
             </span>
           </h1>
         )}
@@ -133,6 +192,34 @@ export default function RegisterPage() {
               />
             </label>
           </div>
+        )}
+        {step === 4 && (
+          <fieldset className="mx-auto mt-[57px] flex w-full max-w-[190px] flex-col gap-[22px] border-0 p-0 font-sans text-base tracking-[-0.02em]">
+            <legend className="sr-only">Account type</legend>
+            <label className="flex items-center gap-8">
+              <input
+                type="radio"
+                name="accountType"
+                value="artist"
+                checked={form.accountType === "artist"}
+                onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+                className="h-5 w-5 accent-[#ff8800]"
+                required
+              />
+              <span>Artist</span>
+            </label>
+            <label className="flex items-center gap-8">
+              <input
+                type="radio"
+                name="accountType"
+                value="commissioner"
+                checked={form.accountType === "commissioner"}
+                onChange={(event) => setForm({ ...form, accountType: event.target.value })}
+                className="h-5 w-5 accent-[#ff8800]"
+              />
+              <span>Commissioner</span>
+            </label>
+          </fieldset>
         )}
         {step < 3 && <div className="mx-auto mt-[57px] flex w-full max-w-[430px] flex-col gap-[28px] font-sans text-base tracking-[-0.02em]">
           {step === 1 ? (
@@ -195,10 +282,12 @@ export default function RegisterPage() {
             </>
           )}
         </div>}
+        {error && <p className="mt-4 text-center text-[#b42318]" role="alert">{error}</p>}
         <button
           type="submit"
-          aria-label="Continue registration"
-          className={`mx-auto flex h-10 w-16 items-center justify-center border-0 bg-transparent p-0 text-[#ff8800] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-[#ff8800] focus-visible:outline-offset-4 ${step === 1 ? "mt-[124px]" : "mt-[12px]"}`}
+          aria-label={submitting ? "Creating account" : "Continue registration"}
+          disabled={submitting}
+          className={`mx-auto flex h-10 w-16 items-center justify-center border-0 bg-transparent p-0 text-[#ff8800] transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-[#ff8800] focus-visible:outline-offset-4 disabled:cursor-wait disabled:opacity-65 ${step === 1 ? "mt-[124px]" : "mt-[64px]"}`}
         >
           <svg aria-hidden="true" width="64" height="32" viewBox="0 0 64 32" fill="none">
             <circle cx="8" cy="16" r="8" fill="currentColor" />
