@@ -129,3 +129,4 @@ So I got my designs in Figma ready to be implemented and here is the list of scr
     - Register screen no.
         - 1
         - 2
+        - 3
