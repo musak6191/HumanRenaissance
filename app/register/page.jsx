@@ -7,10 +7,16 @@ export default function RegisterPage() {
   const [form, setForm] = useState({
     surname: "",
     familyName: "",
+    email: "",
+    password: "",
   });
+  const [step, setStep] = useState(1);
 
   function handleSubmit(event) {
     event.preventDefault();
+    if (step === 1) {
+      setStep(2);
+    }
   }
 
   return (
@@ -28,45 +34,103 @@ export default function RegisterPage() {
         className="mx-auto flex w-full max-w-[500px] flex-col pt-[176px] sm:pt-[178px]"
         onSubmit={handleSubmit}
       >
-        <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-none tracking-[-0.05em]">
-          What&apos;s your{" "}
-          <span
-            className="relative z-0 inline-block"
-            style={{
-              backgroundImage:
-                "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
-            }}
-          >
-            name?
-          </span>
-        </h1>
+        {step === 1 ? (
+          <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-none tracking-[-0.05em]">
+            What&apos;s your{" "}
+            <span
+              className="relative z-0 inline-block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+              }}
+            >
+              name?
+            </span>
+          </h1>
+        ) : (
+          <h1 className="m-0 text-center font-serif text-[46px] font-normal leading-[1.05] tracking-[-0.05em]">
+            Next, please enter an{" "}
+            <span
+              className="relative z-0 inline-block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+              }}
+            >
+              email &amp;
+            </span>
+            <br />
+            <span
+              className="relative z-0 inline-block"
+              style={{
+                backgroundImage:
+                  "linear-gradient(transparent 52%, rgb(255 136 0 / 58%) 52%, rgb(255 136 0 / 58%) 88%, transparent 88%)",
+              }}
+            >
+              password
+            </span>
+          </h1>
+        )}
         <div className="mx-auto mt-[57px] flex w-full max-w-[430px] flex-col gap-[28px] font-sans text-base tracking-[-0.02em]">
-          <label className="flex items-end">
-            <span className="w-[90px] shrink-0 text-right">Surname:</span>
-            <input
-              id="surname"
-              name="surname"
-              type="text"
-              aria-label="Surname"
-              value={form.surname}
-              onChange={(event) => setForm({ ...form, surname: event.target.value })}
-              className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
-              required
-            />
-          </label>
-          <label className="flex items-end">
-            <span className="w-[90px] shrink-0 text-right">Family Name:</span>
-            <input
-              id="family-name"
-              name="familyName"
-              type="text"
-              aria-label="Family Name"
-              value={form.familyName}
-              onChange={(event) => setForm({ ...form, familyName: event.target.value })}
-              className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
-              required
-            />
-          </label>
+          {step === 1 ? (
+            <>
+              <label className="flex items-end">
+                <span className="w-[90px] shrink-0 text-right">Surname:</span>
+                <input
+                  id="surname"
+                  name="surname"
+                  type="text"
+                  aria-label="Surname"
+                  value={form.surname}
+                  onChange={(event) => setForm({ ...form, surname: event.target.value })}
+                  className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+                  required
+                />
+              </label>
+              <label className="flex items-end">
+                <span className="w-[90px] shrink-0 text-right">Family Name:</span>
+                <input
+                  id="family-name"
+                  name="familyName"
+                  type="text"
+                  aria-label="Family Name"
+                  value={form.familyName}
+                  onChange={(event) => setForm({ ...form, familyName: event.target.value })}
+                  className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+                  required
+                />
+              </label>
+            </>
+          ) : (
+            <>
+              <label className="flex items-end">
+                <span className="w-[90px] shrink-0 text-right">E-Mail:</span>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  aria-label="Email"
+                  value={form.email}
+                  onChange={(event) => setForm({ ...form, email: event.target.value })}
+                  className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+                  required
+                />
+              </label>
+              <label className="flex items-end">
+                <span className="w-[90px] shrink-0 text-right">Password:</span>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  aria-label="Password"
+                  value={form.password}
+                  onChange={(event) => setForm({ ...form, password: event.target.value })}
+                  className="ml-3 h-6 min-w-0 flex-1 border-0 border-b border-[#4a4a4a] bg-transparent px-1 py-0 leading-5 outline-none focus:border-[#ff8800] focus:ring-0"
+                  required
+                />
+              </label>
+            </>
+          )}
         </div>
         <button
           type="submit"
@@ -78,15 +142,17 @@ export default function RegisterPage() {
             <path d="M8 16H61M61 16L49 4M61 16L49 28" stroke="currentColor" strokeWidth="3" />
           </svg>
         </button>
-        <p className="mt-[17px] text-center font-serif text-[18px] tracking-[-0.05em]">
-          Already got an account?{" "}
-          <Link
-            href="/login"
-            className="text-[#4a4a4a] underline decoration-[#ff8800] decoration-2 underline-offset-2"
-          >
-            Log in
-          </Link>
-        </p>
+        {step === 1 && (
+          <p className="mt-[17px] text-center font-serif text-[18px] tracking-[-0.05em]">
+            Already got an account?{" "}
+            <Link
+              href="/login"
+              className="text-[#4a4a4a] underline decoration-[#ff8800] decoration-2 underline-offset-2"
+            >
+              Log in
+            </Link>
+          </p>
+        )}
       </form>
     </main>
   );

@@ -128,3 +128,4 @@ So I got my designs in Figma ready to be implemented and here is the list of scr
     - Login screen overhauled
     - Register screen no.
         - 1
+        - 2
