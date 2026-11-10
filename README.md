@@ -4,7 +4,7 @@ Human Renaissance is a marketplace-web-app for freelancers and commissioners. It
 
 ## Additional Info
 
-There is another Readme called README_AI.md. It´s for the distinction between my ReadMe entries and the ones of the Agent.
+There is another Readme called README_AI.md. It´s for the distinction between my ReadMe entries and the ones of the Agent. If something here is written by an agent (which will be very little), it is because it says a very similiar thing I want to say.
 
 ## Tech Stack
 
