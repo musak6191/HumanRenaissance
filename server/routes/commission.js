@@ -106,6 +106,27 @@ const hasValidCommissionUpdateDetails = ({
 
 router.get(["/commission", "/commissions"], async (request, response) => {
   try {
+    if (request.user.accountType === "artist") {
+      const marketCommissions = await prisma.commission.findMany({
+        where: {
+          started: false,
+          artists: { none: {} },
+        },
+        include: {
+          commissioner: {
+            select: {
+              surname: true,
+              familyName: true,
+              city: true,
+            },
+          },
+        },
+        orderBy: { enteredAt: "desc" },
+      });
+      response.json(marketCommissions);
+      return;
+    }
+
     const commissionsFromDatabase = await prisma.commission.findMany({
       where: {
         OR: [

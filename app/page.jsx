@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
+import OverviewCommissionArtist from "./market/artist/overviewCommission";
 import ProfileCommissioner from "./myProfile/profileCommissioner";
 import ProfileArtist from "./myProfile/profileArtist";
 import CommissionerNavigation from "./navigation";
@@ -49,10 +50,6 @@ export default function HomePage() {
 
   if (!authChecked) {
     return null;
-  }
-
-  if (user.accountType === "artist") {
-    return <ProfileArtist artistId={user.id} />;
   }
 
   function updateField(event) {
@@ -118,6 +115,35 @@ export default function HomePage() {
       }}
     />
   );
+
+  if (user.accountType === "artist") {
+    const artistNavigation = (
+      <CommissionerNavigation
+        menuOpen={menuOpen}
+        onToggle={() => setMenuOpen((current) => !current)}
+        onClose={() => setMenuOpen(false)}
+        onMarket={() => {
+          setMenuOpen(false);
+          setScreen("artist-market");
+        }}
+        onProfile={() => {
+          setMenuOpen(false);
+          setScreen("artist-profile");
+        }}
+      />
+    );
+
+    if (screen === "artist-profile") {
+      return <ProfileArtist artistId={user.id} navigation={artistNavigation} />;
+    }
+
+    return (
+      <OverviewCommissionArtist
+        navigation={artistNavigation}
+        onSelectCommission={() => {}}
+      />
+    );
+  }
 
   if (screen === "commissions") {
     return (

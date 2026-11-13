@@ -100,6 +100,9 @@ body { margin: 0; }
 .change-password-button { border: 0; padding: 0; color: #ff8800; background: transparent; cursor: pointer; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); }
 .edit-profile-button { width: 42px; height: 42px; border: 0; color: #ff8800; background: transparent; cursor: pointer; font-size: 30px; }
 .profile-back-button { margin-top: 24px; }
+.artist-market-page { background-image: radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: center, 0 0, 3px 4px; background-size: 100% 100%, 7px 7px, 11px 11px; }
+.artist-market-panel { height: 580px; }
+.artist-market-item span { margin-top: 8px; }
 .artist-profile-page { background-image: radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: center, 0 0, 3px 4px; background-size: 100% 100%, 7px 7px, 11px 11px; }
 .artist-profile-panel { min-height: 650px; }
 .artist-profile-portfolio { margin: -4px 0 27px; }

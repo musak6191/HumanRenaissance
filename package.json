@@ -7,6 +7,7 @@
     "server": "node server/index.js",
     "client": "next dev -p 5173",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "postinstall": "prisma generate",
     "build": "next build",
     "start": "next start -p 5173"
   },
