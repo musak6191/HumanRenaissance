@@ -84,8 +84,8 @@ router.post("/artist", artistOnly, async (request, response) => {
         zipCode,
         country,
         portfolioPictures: {
-          create: (portfolioPictures || []).map((picture, position) => ({
-            picture,
+          create: (portfolioPictures || []).map((objectKey, position) => ({
+            objectKey,
             position,
           })),
         },
@@ -148,8 +148,8 @@ router.put("/artist/:id", artistOnly, async (request, response) => {
           : {
               portfolioPictures: {
                 deleteMany: {},
-                create: portfolioPictures.map((picture, position) => ({
-                  picture,
+                create: portfolioPictures.map((objectKey, position) => ({
+                  objectKey,
                   position,
                 })),
               },

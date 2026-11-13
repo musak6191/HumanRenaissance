@@ -34,13 +34,18 @@ model Artist {
 }
 
 model ArtistPortfolioPicture {
-  artistId String @map("artist_id")
-  picture  String
-  position Int
-  artist   Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  artistId  String   @map("artist_id")
+  objectKey String   @map("object_key")
+  position  Int
+  altText   String?  @map("alt_text")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  artist    Artist   @relation(fields: [artistId], references: [id], onDelete: Cascade)
 
-  @@id([artistId, position])
-  @@unique([artistId, picture])
+  @@unique([artistId, position])
+  @@unique([artistId, objectKey])
+  @@index([artistId, position])
   @@map("artist_portfolio_pictures")
 }
 

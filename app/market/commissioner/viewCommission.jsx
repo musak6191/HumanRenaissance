@@ -253,7 +253,7 @@ export default function ViewCommission({ commissionId, isActive, onBack, navigat
                     </button>
                   )}
                   {(applicant.portfolioPictures || []).map((picture) => (
-                    <img key={picture} src={picture} alt="" />
+                    <img key={picture.id} src={picture.objectKey} alt={picture.altText || ""} />
                   ))}
                   {(!applicant.portfolioPictures || applicant.portfolioPictures.length === 0) && (
                     <div className="portfolio-placeholder">Portfolio</div>

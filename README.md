@@ -131,3 +131,7 @@ So I got my designs in Figma ready to be implemented and here is the list of scr
         - 2
         - 3
         - 4 (With that I overhauled the Auth API, where it now stores auth data but creates profile data with a transaction)
+
+## Bug fixed old screens and API systems and overhauled API for architectural decision 13_11_2026
+
+So I know to make the difference between storing ground data in a future PostGre and storing picture meta data in a S3 Object store, for that I overhauled the Artist API as well as it´s Prisma data, so it is more S3-suitable.
