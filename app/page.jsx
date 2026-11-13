@@ -84,9 +84,6 @@ export default function HomePage() {
         body: JSON.stringify({
           prompt: form.prompt,
           budget: Number(form.gage),
-          commissionerId: user.id,
-          artistIds: [],
-          started: false,
           fusionCommission: form.fusion,
         }),
       });

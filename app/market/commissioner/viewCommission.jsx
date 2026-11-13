@@ -69,10 +69,12 @@ export default function ViewCommission({ commissionId, isActive, onBack, navigat
     }
 
     const applicantIds = isActive
-      ? commission.artistIds
+      ? Array.isArray(commission.artistIds)
+        ? commission.artistIds
+        : []
       : Array.isArray(commission.applicantIds)
       ? commission.applicantIds
-      : commission.artistIds;
+      : [];
 
     return applicantIds
       .map((artistId) => artists.find((artist) => artist.id === artistId))

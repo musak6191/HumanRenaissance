@@ -71,18 +71,6 @@ const hasValidArtists = (artistIds, fusionCommission) =>
   (fusionCommission ? artistIds.length >= 2 : artistIds.length === 1) &&
   new Set(artistIds).size === artistIds.length &&
   artistIds.every((artistId) => typeof artistId === "string" && getArtist(artistId));
-const hasValidCommissionCreationDetails = ({
-  commissionerId,
-  artistIds,
-  started,
-  fusionCommission,
-}) =>
-  typeof commissionerId === "string" &&
-  typeof started === "boolean" &&
-  typeof fusionCommission === "boolean" &&
-  Array.isArray(artistIds) &&
-  new Set(artistIds).size === artistIds.length &&
-  artistIds.every((artistId) => typeof artistId === "string");
 const hasValidCommissionDetails = ({
   prompt,
   commissionerId,
@@ -163,10 +151,8 @@ router.post(["/commission", "/commissions"], commissionerOnly, async (request, r
   const {
     title: _title,
     prompt,
-    commissionerId,
     artistIds,
     applicantIds,
-    started,
     fusionCommission,
     budget,
     timeline,
@@ -177,39 +163,56 @@ router.post(["/commission", "/commissions"], commissionerOnly, async (request, r
     return;
   }
 
-  if (
-    !hasValidCommissionCreationDetails({
-      commissionerId,
-      artistIds,
-      started,
-      fusionCommission,
-    })
-  ) {
+  if (typeof budget !== "number" || !Number.isFinite(budget) || budget < 0) {
     response.status(400).json({
-      message: "A valid commissionerId, artistIds, started, and fusionCommission are required.",
+      message: "A valid gage is required.",
     });
     return;
   }
 
-  if (commissionerId !== request.user.userId) {
-    response.status(403).json({ message: "You cannot create a commission for another user." });
+  if (typeof fusionCommission !== "boolean") {
+    response.status(400).json({ message: "A valid fusion commission value is required." });
+    return;
+  }
+
+  const commissionerId = request.user.userId;
+  const requestedArtistIds = artistIds === undefined ? [] : artistIds;
+  const requestedApplicantIds = applicantIds === undefined ? [] : applicantIds;
+
+  if (
+    !Array.isArray(requestedArtistIds) ||
+    !Array.isArray(requestedApplicantIds) ||
+    new Set(requestedArtistIds).size !== requestedArtistIds.length ||
+    new Set(requestedApplicantIds).size !== requestedApplicantIds.length ||
+    !requestedArtistIds.every((artistId) => typeof artistId === "string") ||
+    !requestedApplicantIds.every((artistId) => typeof artistId === "string")
+  ) {
+    response.status(400).json({ message: "Artist and applicant IDs must be arrays of unique strings." });
     return;
   }
 
   const enteredAt = new Date();
 
   try {
-    const [commissioner, artists] = await Promise.all([
-      prisma.commissioner.findUnique({ where: { id: commissionerId } }),
+    const [commissioner, artists, applicants] = await Promise.all([
+      prisma.commissioner.upsert({
+        where: { id: commissionerId },
+        update: {},
+        create: { id: commissionerId },
+      }),
       prisma.artist.findMany({
-        where: { id: { in: artistIds } },
+        where: { id: { in: requestedArtistIds } },
+        select: { id: true },
+      }),
+      prisma.artist.findMany({
+        where: { id: { in: requestedApplicantIds } },
         select: { id: true },
       }),
     ]);
 
-    if (!commissioner || artists.length !== artistIds.length) {
+    if (artists.length !== requestedArtistIds.length || applicants.length !== requestedApplicantIds.length) {
       response.status(400).json({
-        message: "A valid commissionerId, artistIds, started, and fusionCommission are required.",
+        message: "The requested artists and applicants must be valid.",
       });
       return;
     }
@@ -221,17 +224,17 @@ router.post(["/commission", "/commissions"], commissionerOnly, async (request, r
         prompt: prompt.trim(),
         budget,
         timeline,
-        started,
+        started: false,
         fusionCommission,
         enteredAt,
-        startedAt: started ? enteredAt : null,
+        startedAt: null,
         artists: {
-          create: artistIds.map((artistId) => ({
+          create: requestedArtistIds.map((artistId) => ({
             artist: { connect: { id: artistId } },
           })),
         },
         applicants: {
-          create: (applicantIds || []).map((artistId) => ({
+          create: requestedApplicantIds.map((artistId) => ({
             artist: { connect: { id: artistId } },
           })),
         },
