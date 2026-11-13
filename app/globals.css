@@ -100,6 +100,16 @@ body { margin: 0; }
 .change-password-button { border: 0; padding: 0; color: #ff8800; background: transparent; cursor: pointer; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); }
 .edit-profile-button { width: 42px; height: 42px; border: 0; color: #ff8800; background: transparent; cursor: pointer; font-size: 30px; }
 .profile-back-button { margin-top: 24px; }
+.artist-profile-page { background-image: radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: center, 0 0, 3px 4px; background-size: 100% 100%, 7px 7px, 11px 11px; }
+.artist-profile-panel { min-height: 650px; }
+.artist-profile-portfolio { margin: -4px 0 27px; }
+.artist-profile-carousel { height: 190px; gap: 14px; }
+.artist-profile-carousel img, .artist-profile-carousel .portfolio-placeholder { flex-basis: 210px; width: 210px; height: 190px; }
+.artist-profile-picture { position: relative; flex: 0 0 210px; }
+.artist-profile-picture img { display: block; }
+.artist-profile-remove { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; border: 0; color: #fff; background: rgb(74 74 74 / 75%); cursor: pointer; font-size: 23px; line-height: 1; }
+.artist-profile-upload { display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; color: #ff8800; cursor: pointer; font-size: 16px; }
+.artist-profile-upload input { width: 0; height: 0; opacity: 0; }
 .no-more-applicants { display: grid; min-height: 300px; margin: 0; place-items: center; color: #4a4a4a; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 38px; letter-spacing: var(--serif-letter-spacing); text-align: center; }
 .prompt-introduction h1 { margin: 0; font-family: "Source Serif Pro", "Source Serif 4", serif; font-size: 25px; font-weight: 400; letter-spacing: var(--serif-letter-spacing); line-height: 1.05; }
 .prompt-introduction h1 em, .gage-field > span { isolation: isolate; position: relative; z-index: 0; }

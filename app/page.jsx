@@ -6,6 +6,7 @@ import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
 import ProfileCommissioner from "./myProfile/profileCommissioner";
+import ProfileArtist from "./myProfile/profileArtist";
 import CommissionerNavigation from "./navigation";
 import { apiBaseUrl, authFetch } from "./lib/authFetch";
 
@@ -51,12 +52,7 @@ export default function HomePage() {
   }
 
   if (user.accountType === "artist") {
-    return (
-      <main className="auth-page">
-        <h1>Artist account</h1>
-        <p>Your artist profile is connected to this account.</p>
-      </main>
-    );
+    return <ProfileArtist artistId={user.id} />;
   }
 
   function updateField(event) {
