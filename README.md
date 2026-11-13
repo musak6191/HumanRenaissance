@@ -135,3 +135,4 @@ So I got my designs in Figma ready to be implemented and here is the list of scr
 ## Bug fixed old screens and API systems and overhauled API for architectural decision 13_11_2026
 
 So I know to make the difference between storing ground data in a future PostGre and storing picture meta data in a S3 Object store, for that I overhauled the Artist API as well as it´s Prisma data, so it is more S3-suitable.
+Also I am implementing new screens like the market and profile screens for artists.
