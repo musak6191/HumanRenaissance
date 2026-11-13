@@ -7,6 +7,12 @@ import { requireAccountType } from "../middleware/accountType.js";
 
 const router = express.Router();
 const commissionerOnly = requireAccountType("commissioner");
+const artistOnly = requireAccountType("artist");
+const serializeCommission = (commission) => ({
+  ...commission,
+  artistIds: commission.artists?.map(({ artistId }) => artistId) || [],
+  applicantIds: commission.applicants?.map(({ artistId }) => artistId) || [],
+});
 
 let commissions = [
   {
@@ -135,8 +141,12 @@ router.get(["/commission", "/commissions"], async (request, response) => {
           { applicants: { some: { artistId: request.user.userId } } },
         ],
       },
+      include: {
+        artists: true,
+        applicants: true,
+      },
     });
-    response.json(commissionsFromDatabase);
+    response.json(commissionsFromDatabase.map(serializeCommission));
   } catch (error) {
     console.error("Failed to load commissions from the database.", error);
     response.status(500).json({ message: "Failed to load commissions." });
@@ -148,11 +158,29 @@ router.get("/commission/:id", async (request, response) => {
     const commission = await prisma.commission.findFirst({
       where: {
         id: request.params.id,
-        OR: [
-          { commissionerId: request.user.userId },
-          { artists: { some: { artistId: request.user.userId } } },
-          { applicants: { some: { artistId: request.user.userId } } },
-        ],
+        ...(request.user.accountType === "artist"
+          ? {
+              started: false,
+              artists: { none: {} },
+            }
+          : {
+              OR: [
+                { commissionerId: request.user.userId },
+                { artists: { some: { artistId: request.user.userId } } },
+                { applicants: { some: { artistId: request.user.userId } } },
+              ],
+            }),
+      },
+      include: {
+        artists: true,
+        applicants: true,
+        commissioner: {
+          select: {
+            surname: true,
+            familyName: true,
+            city: true,
+          },
+        },
       },
     });
 
@@ -161,10 +189,53 @@ router.get("/commission/:id", async (request, response) => {
       return;
     }
 
-    response.json(commission);
+    response.json(serializeCommission(commission));
   } catch (error) {
     console.error("Failed to load the commission from the database.", error);
     response.status(500).json({ message: "Failed to load commission." });
+  }
+});
+
+router.post("/commission/:id/apply", artistOnly, async (request, response) => {
+  try {
+    const commission = await prisma.commission.findFirst({
+      where: {
+        id: request.params.id,
+        started: false,
+        artists: { none: {} },
+      },
+    });
+
+    if (!commission) {
+      response.status(404).json({ message: "Commission is no longer available." });
+      return;
+    }
+
+    const existingApplication = await prisma.commissionApplicant.findUnique({
+      where: {
+        commissionId_artistId: {
+          commissionId: commission.id,
+          artistId: request.user.userId,
+        },
+      },
+    });
+
+    if (existingApplication) {
+      response.status(409).json({ message: "You have already applied to this commission." });
+      return;
+    }
+
+    await prisma.commissionApplicant.create({
+      data: {
+        commissionId: commission.id,
+        artistId: request.user.userId,
+      },
+    });
+
+    response.status(201).json({ message: "Application sent successfully." });
+  } catch (error) {
+    console.error("Failed to submit the artist application.", error);
+    response.status(500).json({ message: "Failed to send portfolio." });
   }
 });
 

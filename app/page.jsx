@@ -6,6 +6,7 @@ import CreateCommission from "./market/commissioner/createCommission";
 import OverviewCommission from "./market/commissioner/overviewCommission";
 import ViewCommission from "./market/commissioner/viewCommission";
 import OverviewCommissionArtist from "./market/artist/overviewCommission";
+import ViewCommissionArtist from "./market/artist/viewCommission";
 import ProfileCommissioner from "./myProfile/profileCommissioner";
 import ProfileArtist from "./myProfile/profileArtist";
 import CommissionerNavigation from "./navigation";
@@ -25,6 +26,7 @@ export default function HomePage() {
   const [screen, setScreen] = useState("prompt");
   const [selectedCommissionId, setSelectedCommissionId] = useState(null);
   const [selectedCommissionIsActive, setSelectedCommissionIsActive] = useState(false);
+  const [artistNotification, setArtistNotification] = useState("");
   const [authChecked, setAuthChecked] = useState(false);
   const [user, setUser] = useState(null);
 
@@ -137,10 +139,30 @@ export default function HomePage() {
       return <ProfileArtist artistId={user.id} navigation={artistNavigation} />;
     }
 
+    if (screen === "artist-commission") {
+      return (
+        <ViewCommissionArtist
+          commissionId={selectedCommissionId}
+          artistId={user.id}
+          onBack={() => setScreen("artist-market")}
+          onApplicationSent={(message) => {
+            setArtistNotification(message);
+            setScreen("artist-market");
+          }}
+          navigation={artistNavigation}
+        />
+      );
+    }
+
     return (
       <OverviewCommissionArtist
         navigation={artistNavigation}
-        onSelectCommission={() => {}}
+        notification={artistNotification}
+        onSelectCommission={(commissionId) => {
+          setArtistNotification("");
+          setSelectedCommissionId(commissionId);
+          setScreen("artist-commission");
+        }}
       />
     );
   }

@@ -103,6 +103,20 @@ body { margin: 0; }
 .artist-market-page { background-image: radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: center, 0 0, 3px 4px; background-size: 100% 100%, 7px 7px, 11px 11px; }
 .artist-market-panel { height: 580px; }
 .artist-market-item span { margin-top: 8px; }
+.artist-commission-detail { min-height: 488px; padding: 28px 40px 72px; }
+.artist-commission-detail .commission-view-prompt { width: auto; margin: 0 0 28px; text-align: left; }
+.artist-commissioner-name, .artist-commissioner-city { margin: 0; font-size: 16px; }
+.artist-commissioner-city { margin-top: 4px; }
+.artist-commission-gage { margin-top: 18px; font-size: 16px; }
+.artist-commission-gage strong { position: relative; z-index: 0; font-family: "Source Serif 4", serif; font-size: 18px; font-weight: 400; }
+.artist-commission-gage strong::after { position: absolute; z-index: -1; content: ""; right: -3px; bottom: 0; left: -3px; height: 9px; background: #ff8800; clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%); opacity: .4; }
+.artist-commission-actions { display: flex; align-items: center; justify-content: center; gap: 34px; margin-top: 24px; }
+.artist-commission-actions .commission-back-button { margin: 0; }
+.artist-send-portfolio { display: inline-flex; align-items: center; gap: 10px; width: auto; margin: 0; font-family: "Source Serif 4", serif; font-size: 25px; letter-spacing: var(--serif-letter-spacing); }
+.artist-send-portfolio > span:first-child { width: auto; height: auto; }
+.artist-send-portfolio > span:first-child::before, .artist-send-portfolio > span:first-child::after { display: none; }
+.artist-send-portfolio > span:last-child { flex: 0 0 76px; }
+.artist-market-notification { margin: 0 auto 12px; }
 .artist-profile-page { background-image: radial-gradient(ellipse at center, transparent 65%, rgb(74 74 74 / 20%) 100%), radial-gradient(rgb(74 74 74 / 15%) .65px, transparent .65px), radial-gradient(rgb(255 255 255 / 70%) .7px, transparent .7px); background-position: center, 0 0, 3px 4px; background-size: 100% 100%, 7px 7px, 11px 11px; }
 .artist-profile-panel { min-height: 650px; }
 .artist-profile-portfolio { margin: -4px 0 27px; }

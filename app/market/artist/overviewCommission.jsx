@@ -22,7 +22,11 @@ function CommissionList({ commissions, emptyMessage, onSelect }) {
   ));
 }
 
-export default function OverviewCommissionArtist({ onSelectCommission, navigation }) {
+export default function OverviewCommissionArtist({
+  onSelectCommission,
+  navigation,
+  notification,
+}) {
   const [commissions, setCommissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -69,6 +73,7 @@ export default function OverviewCommissionArtist({ onSelectCommission, navigatio
       {navigation}
       <header className="prompt-header" aria-label="Human Renaissance">H</header>
       <h1 className="commissions-title">Market</h1>
+      {notification && <p className="prompt-status artist-market-notification" role="status">{notification}</p>}
 
       <section className="commission-panel artist-market-panel" aria-labelledby="market-title">
         <h2 id="market-title"><span>Prompts</span></h2>
